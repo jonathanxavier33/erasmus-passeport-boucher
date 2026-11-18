@@ -1,0 +1,2227 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Butcher Passport - Erasmus Challenge BP Boucher 1ère année</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        butcher: {
+                            red: '#7A1E2C',
+                            gold: '#D4A24C',
+                            amber: '#F59E0B',
+                            cream: '#FFF7F5',
+                            dark: '#1F0A0E',
+                            warmBg: '#FBF7F5'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['Georgia', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #D4A24C; border-radius: 4px; }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        .toast-enter { animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .toast-exit { animation: fadeOut 0.3s ease-out forwards; }
+        @media print {
+            body * { visibility: hidden; }
+            #printable-boarding-pass, #printable-boarding-pass * { visibility: visible; }
+            #printable-boarding-pass {
+                position: fixed; left: 0; top: 0; width: 100%; margin: 0; padding: 24px;
+                background: #7A1E2C !important; color: white !important;
+                -webkit-print-color-adjust: exact; print-color-adjust: exact;
+                box-shadow: none !important; border-radius: 16px !important;
+            }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-butcher-warmBg text-slate-800 min-h-full flex flex-col font-sans selection:bg-butcher-gold selection:text-white">
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-3 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- MODALE DE CONFIRMATION -->
+    <div id="confirm-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[110] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+            <div class="flex items-center gap-3 text-red-600 mb-3">
+                <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h3 class="font-bold text-lg text-slate-900">Réinitialiser la session ?</h3>
+            </div>
+            <p class="text-sm text-slate-600 mb-6">
+                Toutes vos réponses, votre score et vos badges débloqués seront remis à zéro. Cette action est irréversible.
+            </p>
+            <div class="flex justify-end gap-3">
+                <button onclick="closeConfirmModal()" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 font-semibold text-sm hover:bg-slate-50 transition">Annuler</button>
+                <button id="modal-confirm-btn" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-sm shadow transition">Confirmer la remise à zéro</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="bg-butcher-red text-white shadow-lg sticky top-0 z-50 no-print">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('tab0')">
+                <div class="bg-butcher-gold text-butcher-red p-2.5 rounded-xl text-xl font-bold shadow-md">
+                    <i class="fa-solid fa-drumstick-bite"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-extrabold text-lg md:text-xl tracking-tight text-amber-100">The Butcher Passport</h1>
+                        <span class="hidden sm:inline-block text-[10px] font-bold uppercase tracking-wider bg-butcher-gold/20 text-butcher-gold border border-butcher-gold/40 px-2 py-0.5 rounded-full">BP Boucher 1ère année</span>
+                    </div>
+                    <p class="text-xs text-amber-200/80">Erasmus+ Mobility Prep &amp; Technical English</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 sm:gap-4 bg-slate-900/75 px-3.5 py-2 rounded-2xl border border-amber-500/30 shadow-inner">
+                <div class="hidden md:block text-right">
+                    <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Rang Actuel</span>
+                    <span id="hud-rank" class="text-xs font-bold text-amber-200">Apprenti Boucher 🥩</span>
+                </div>
+                <div class="hidden md:block h-8 w-px bg-slate-700"></div>
+                <div class="text-center">
+                    <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Score Total</span>
+                    <span id="global-score" class="text-lg sm:text-xl font-black text-butcher-gold">0 PTS</span>
+                </div>
+                <div class="h-8 w-px bg-slate-700"></div>
+                <div class="text-center cursor-pointer" onclick="switchTab('tab0')" title="Voir la salle des trophées">
+                    <span class="text-[10px] uppercase tracking-wider text-slate-400 block">Trophées</span>
+                    <div class="flex items-center gap-1.5">
+                        <i class="fa-solid fa-trophy text-butcher-gold text-sm"></i>
+                        <span id="hud-badges-count" class="text-sm font-extrabold text-white">0 / 8</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="bg-slate-900/95 border-t border-slate-800 overflow-x-auto">
+            <div class="max-w-7xl mx-auto px-2 flex justify-start lg:justify-center gap-1 text-xs sm:text-sm font-medium">
+                <button onclick="switchTab('tab0')" id="btn-tab0" class="tab-btn px-3.5 py-3 border-b-2 border-butcher-gold text-butcher-gold flex items-center gap-2 whitespace-nowrap transition">
+                    <i class="fa-solid fa-gauge-high"></i><span>Tableau de Bord</span>
+                </button>
+                <button onclick="switchTab('tab1')" id="btn-tab1" class="tab-btn px-3.5 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
+                    <span class="w-5 h-5 rounded-full bg-slate-800 text-xs flex items-center justify-center font-bold">1</span><span>Cut &amp; Match</span>
+                </button>
+                <button onclick="switchTab('tab2')" id="btn-tab2" class="tab-btn px-3.5 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
+                    <span class="w-5 h-5 rounded-full bg-slate-800 text-xs flex items-center justify-center font-bold">2</span><span>Taboo Pro</span>
+                </button>
+                <button onclick="switchTab('tab3')" id="btn-tab3" class="tab-btn px-3.5 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
+                    <span class="w-5 h-5 rounded-full bg-slate-800 text-xs flex items-center justify-center font-bold">3</span><span>Serious Game</span>
+                </button>
+                <button onclick="switchTab('tab4')" id="btn-tab4" class="tab-btn px-3.5 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
+                    <span class="w-5 h-5 rounded-full bg-slate-800 text-xs flex items-center justify-center font-bold">4</span><span>Tech Lab</span>
+                </button>
+                <button onclick="switchTab('tab5')" id="btn-tab5" class="tab-btn px-3.5 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
+                    <span class="w-5 h-5 rounded-full bg-slate-800 text-xs flex items-center justify-center font-bold">5</span><span>Phrasebook</span>
+                </button>
+                <button onclick="switchTab('tab6')" id="btn-tab6" class="tab-btn px-3.5 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
+                    <i class="fa-solid fa-passport text-butcher-gold"></i><span>Boarding Pass</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-grow max-w-6xl w-full mx-auto p-4 md:p-6">
+
+        <!-- ================= ONGLET 0 : TABLEAU DE BORD ================= -->
+        <section id="tab0" class="tab-content block space-y-6">
+            <div class="bg-gradient-to-r from-butcher-red via-slate-900 to-butcher-red text-white rounded-3xl p-6 md:p-8 shadow-xl border border-amber-500/20 relative overflow-hidden">
+                <i class="fa-solid fa-bone text-[160px] absolute -right-6 -bottom-8 text-white/5 pointer-events-none"></i>
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
+                    <div class="space-y-2 max-w-2xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-butcher-gold/20 border border-butcher-gold/40 text-amber-200 text-xs font-bold">
+                            <i class="fa-solid fa-plane-up"></i> Préparation Erasmus+ • BP Boucher 1ère année
+                        </div>
+                        <h2 class="text-2xl md:text-3xl font-black tracking-tight text-white">Bienvenue dans votre Laboratoire International !</h2>
+                        <p class="text-sm text-slate-300 leading-relaxed">
+                            Complétez les 6 ateliers interactifs, débloquez les 8 trophées de compétence et générez votre <strong class="text-amber-300">Boarding Pass officiel</strong> avant votre départ en mobilité européenne.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-800/90 backdrop-blur border border-slate-700 p-5 rounded-2xl w-full lg:w-80 shrink-0 shadow-lg">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Progression Globale</span>
+                            <span id="dash-percent" class="text-sm font-black text-butcher-gold">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-700 h-3 rounded-full overflow-hidden mb-3">
+                            <div id="dash-progress-bar" class="bg-gradient-to-r from-butcher-gold to-emerald-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex justify-between items-center text-xs border-t border-slate-700/80 pt-3">
+                            <div>
+                                <span class="text-slate-400 block">Rang actuel :</span>
+                                <span id="dash-rank" class="font-bold text-amber-200">Apprenti Boucher 🥩</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-slate-400 block">Score :</span>
+                                <span id="dash-score" class="font-black text-emerald-400 text-base">0 / 715 PTS</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
+                <div class="flex flex-wrap justify-between items-center gap-2 mb-5">
+                    <h3 class="font-bold text-lg text-butcher-red flex items-center gap-2">
+                        <i class="fa-solid fa-chart-simple text-butcher-gold"></i> Statistiques par Compétence Professionnelle
+                    </h3>
+                    <button onclick="openResetModal()" class="text-xs text-slate-500 hover:text-red-600 font-semibold flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 hover:border-red-200 hover:bg-red-50 transition">
+                        <i class="fa-solid fa-rotate-left"></i> Réinitialiser ma progression
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="skills-grid"></div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
+                <div class="flex flex-wrap justify-between items-center gap-2 mb-5">
+                    <div>
+                        <h3 class="font-bold text-lg text-butcher-red flex items-center gap-2">
+                            <i class="fa-solid fa-trophy text-butcher-gold"></i> Salle des Trophées &amp; Badges (8)
+                        </h3>
+                        <p class="text-xs text-slate-500">Relevez les défis dans chaque atelier pour débloquer tous les badges.</p>
+                    </div>
+                    <span id="badge-room-summary" class="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full">0 / 8 Débloqués</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="trophies-grid"></div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
+                <h3 class="font-bold text-lg text-butcher-red flex items-center gap-2 mb-4">
+                    <i class="fa-solid fa-compass text-butcher-gold"></i> Parcours des 6 Ateliers Erasmus+
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="workshops-overview-grid"></div>
+            </div>
+        </section>
+
+        <!-- ================= ATELIER 1 : CUT & MATCH + CONVERSIONS ================= -->
+        <section id="tab1" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-8">
+                <div>
+                    <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="p-3 bg-amber-100 text-butcher-amber rounded-xl text-xl"><i class="fa-solid fa-bolt"></i></div>
+                            <div>
+                                <h2 class="text-2xl font-bold text-butcher-red">Atelier 1A : Cut &amp; Match (12 Termes Clés)</h2>
+                                <p class="text-sm text-slate-500">Écoutez la prononciation anglaise et associez chaque terme à sa traduction française.</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+                            <button onclick="filterW1('all')" id="w1-filter-all" class="w1-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-butcher-red text-white transition">Tout (12)</button>
+                            <button onclick="filterW1('equipment')" id="w1-filter-equipment" class="w1-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:bg-white transition">Matériel</button>
+                            <button onclick="filterW1('cuts')" id="w1-filter-cuts" class="w1-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:bg-white transition">Pièces</button>
+                            <button onclick="filterW1('process')" id="w1-filter-process" class="w1-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:bg-white transition">Gestes</button>
+                        </div>
+                    </div>
+
+                    <div id="w1-questions" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4"></div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-200 flex flex-wrap justify-between items-center gap-4">
+                        <div class="flex items-center gap-4">
+                            <div>
+                                <span class="text-xs text-slate-500 block">Réponses sélectionnées :</span>
+                                <span class="text-base font-bold text-butcher-red" id="w1-progress-text">0 / 12</span>
+                            </div>
+                            <div class="h-8 w-px bg-slate-200"></div>
+                            <div>
+                                <span class="text-xs text-slate-500 block">Score Atelier 1A :</span>
+                                <span class="text-base font-bold text-emerald-600" id="w1-score-display">0 / 120 pts</span>
+                            </div>
+                        </div>
+                        <button onclick="checkW1Answers()" class="px-6 py-3 bg-butcher-gold hover:bg-amber-600 text-white font-bold rounded-xl shadow transition flex items-center gap-2">
+                            <i class="fa-solid fa-check"></i> Valider le Vocabulaire
+                        </button>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-3 bg-blue-100 text-blue-700 rounded-xl text-xl"><i class="fa-solid fa-scale-balanced"></i></div>
+                        <div>
+                            <h3 class="text-xl font-bold text-butcher-red">Atelier 1B : Convertisseur &amp; Défi Unités Anglo-Saxonnes (°F / oz / lb)</h3>
+                            <p class="text-sm text-slate-500">Utilisez le convertisseur interactif pour résoudre les 3 problèmes de boucherie ci-dessous.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                        <div class="lg:col-span-5 bg-white p-4 rounded-xl border border-slate-200 space-y-4">
+                            <h4 class="font-bold text-xs uppercase tracking-wider text-butcher-red"><i class="fa-solid fa-calculator text-butcher-gold mr-1"></i> Convertisseur Rapide</h4>
+
+                            <div>
+                                <label class="text-xs font-semibold text-slate-600 block mb-1">Température à cœur (°F ↔ °C)</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" id="conv-f" value="135" oninput="convertTemp('F')" class="w-full px-3 py-2 border rounded-lg text-sm font-mono">
+                                    <span class="text-xs font-bold text-slate-400">°F =</span>
+                                    <input type="number" id="conv-c" value="57" oninput="convertTemp('C')" class="w-full px-3 py-2 border rounded-lg text-sm font-mono">
+                                    <span class="text-xs font-bold text-slate-400">°C</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="text-xs font-semibold text-slate-600 block mb-1">Pesée d'un steak (oz ↔ grammes)</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" id="conv-oz" value="8" oninput="convertWeight('OZ')" class="w-full px-3 py-2 border rounded-lg text-sm font-mono">
+                                    <span class="text-xs font-bold text-slate-400">oz =</span>
+                                    <input type="number" id="conv-g" value="227" oninput="convertWeight('G')" class="w-full px-3 py-2 border rounded-lg text-sm font-mono">
+                                    <span class="text-xs font-bold text-slate-400">g</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="text-xs font-semibold text-slate-600 block mb-1">Pesée d'un rôti (lb ↔ kilos)</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" id="conv-lb" value="2" oninput="convertLb('LB')" class="w-full px-3 py-2 border rounded-lg text-sm font-mono">
+                                    <span class="text-xs font-bold text-slate-400">lb =</span>
+                                    <input type="number" id="conv-kg" value="0.91" step="0.01" oninput="convertLb('KG')" class="w-full px-3 py-2 border rounded-lg text-sm font-mono">
+                                    <span class="text-xs font-bold text-slate-400">kg</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-7 space-y-3">
+                            <div id="conversion-quiz-container" class="space-y-3"></div>
+                            <div class="flex justify-end pt-2">
+                                <button onclick="checkConversionQuiz()" class="px-5 py-2.5 bg-butcher-red hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition">
+                                    Valider les Conversions (+30 pts)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ATELIER 3 : SERIOUS GAME ================= -->
+        <section id="tab3" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
+                <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="p-3 bg-emerald-100 text-emerald-700 rounded-xl text-xl"><i class="fa-solid fa-gamepad"></i></div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h2 class="text-2xl font-bold text-butcher-red">Atelier 3 : Serious Game — Immersion à la Boucherie</h2>
+                                <span class="hidden sm:inline-block px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-extrabold uppercase">Arbre Décisionnel</span>
+                            </div>
+                            <p class="text-sm text-slate-500">Incarnez l'Apprenti français et le Maître d'apprentissage étranger. Vos choix modifient l'histoire et débloquent différentes fins !</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 bg-slate-100 px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-700">
+                        <i class="fa-solid fa-flag-checkered text-butcher-gold"></i>
+                        <span>Fins débloquées : <span id="sg-endings-count" class="text-emerald-600 font-black">0 / 3</span></span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" id="sg-scenario-cards"></div>
+
+                <div class="bg-slate-900 text-white rounded-3xl overflow-hidden shadow-2xl border border-slate-800">
+                    <div class="bg-slate-950/90 px-6 py-4 border-b border-slate-800 flex flex-wrap justify-between items-center gap-4">
+                        <div class="flex items-center gap-3">
+                            <div id="sg-role-badge" class="px-3 py-1.5 rounded-xl bg-butcher-gold/20 border border-butcher-gold text-amber-200 text-xs font-extrabold flex items-center gap-2">
+                                <i class="fa-solid fa-user-graduate"></i>
+                                <span id="sg-role-label">RÔLE : APPRENTI ERASMUS+</span>
+                            </div>
+                            <span id="sg-step-badge" class="text-xs font-mono text-slate-400 bg-slate-800 px-2.5 py-1 rounded-lg">Étape 1 / 8</span>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-4 sm:gap-6 flex-grow sm:flex-grow-0 justify-end">
+                            <div class="w-36 sm:w-44">
+                                <div class="flex justify-between text-[11px] font-bold mb-1">
+                                    <span class="text-amber-300"><i class="fa-solid fa-handshake"></i> Confiance Maître</span>
+                                    <span id="sg-trust-val" class="text-white font-mono">50%</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                                    <div id="sg-trust-bar" class="h-full bg-gradient-to-r from-amber-500 to-butcher-gold transition-all duration-500" style="width: 50%"></div>
+                                </div>
+                            </div>
+                            <div class="w-36 sm:w-44">
+                                <div class="flex justify-between text-[11px] font-bold mb-1">
+                                    <span class="text-emerald-300"><i class="fa-solid fa-drumstick-bite"></i> Maîtrise Atelier</span>
+                                    <span id="sg-mastery-val" class="text-white font-mono">50%</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                                    <div id="sg-mastery-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500" style="width: 50%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 md:p-8 space-y-6" id="sg-stage-body">
+                        <div class="flex flex-wrap justify-between items-center gap-3 pb-4 border-b border-slate-800">
+                            <div class="flex items-center gap-3.5">
+                                <div id="sg-avatar" class="w-12 h-12 rounded-2xl bg-butcher-gold text-butcher-red flex items-center justify-center font-bold text-xl shadow-lg">
+                                    <i class="fa-solid fa-user-tie"></i>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <h3 id="sg-speaker-name" class="font-extrabold text-lg text-amber-200">Head Butcher Liam</h3>
+                                        <span id="sg-location-tag" class="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">Dublin • 06:00 AM</span>
+                                    </div>
+                                    <p id="sg-scene-subtitle" class="text-xs text-slate-400 mt-0.5">Réception de la livraison</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="speakSeriousGameLine()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 rounded-xl text-xs font-bold flex items-center gap-2 transition">
+                                    <i class="fa-solid fa-volume-high"></i> Écouter la réplique
+                                </button>
+                                <button onclick="restartCurrentSeriousGame()" class="px-3 py-2 bg-slate-800/60 hover:bg-red-900/40 text-slate-400 hover:text-red-300 border border-slate-700 rounded-xl text-xs font-bold transition" title="Recommencer ce scénario depuis le début">
+                                    <i class="fa-solid fa-rotate-left"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div id="sg-context-box" class="text-xs sm:text-sm text-slate-300 bg-slate-800/50 border-l-4 border-butcher-gold p-3.5 rounded-r-xl leading-relaxed"></div>
+                            <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 relative shadow-inner">
+                                <i class="fa-solid fa-quote-left text-slate-600 text-2xl absolute top-3 left-4 opacity-30"></i>
+                                <p id="sg-dialogue-text" class="text-base sm:text-lg font-medium text-white italic pl-7 leading-relaxed"></p>
+                                <p id="sg-dialogue-fr-hint" class="text-xs text-slate-400 pl-7 mt-2 hidden"></p>
+                                <button onclick="toggleSgTranslation()" class="mt-2 ml-7 text-[11px] text-amber-400 hover:underline font-semibold">
+                                    <i class="fa-solid fa-language"></i> Afficher / Masquer l'aide traduction
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="sg-consequence-banner" class="hidden p-4 rounded-2xl border text-xs sm:text-sm leading-relaxed"></div>
+                        <div id="sg-choices-container" class="space-y-3 pt-1"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ATELIER 2 : TABOO ================= -->
+        <section id="tab2" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
+                <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="p-3 bg-red-100 text-red-600 rounded-xl text-xl"><i class="fa-solid fa-ban"></i></div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-butcher-red">Atelier 2 : Taboo &amp; Flashcards Pro (12 Cartes)</h2>
+                            <p class="text-sm text-slate-500">Faites deviner le terme à votre binôme en anglais SANS prononcer les mots interdits !</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="bg-emerald-50 border border-emerald-200 px-3.5 py-2 rounded-xl text-center">
+                            <span class="text-[10px] text-emerald-700 font-bold uppercase block">Cartes Maîtrisées</span>
+                            <span id="taboo-mastered-count" class="text-lg font-black text-emerald-700">0 / 12</span>
+                        </div>
+                        <div class="flex items-center gap-2 bg-slate-100 p-2 rounded-xl border border-slate-200">
+                            <div class="text-center px-2">
+                                <span class="text-[10px] text-slate-400 font-bold uppercase block">Chrono</span>
+                                <span id="taboo-timer" class="text-xl font-mono font-bold text-slate-800">45s</span>
+                            </div>
+                            <select id="taboo-duration" onchange="resetTabooTimer()" class="bg-white border border-slate-300 rounded-lg text-xs font-bold px-2 py-1.5 text-slate-700">
+                                <option value="30">30s</option>
+                                <option value="45" selected>45s</option>
+                                <option value="60">60s</option>
+                            </select>
+                            <button onclick="startTabooTimer()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow transition">
+                                <i class="fa-solid fa-play"></i> Go
+                            </button>
+                            <button onclick="resetTabooTimer()" class="px-2.5 py-2 bg-slate-300 hover:bg-slate-400 text-slate-700 text-xs font-bold rounded-lg transition" title="Réinitialiser le chrono">
+                                <i class="fa-solid fa-rotate-left"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="flashcards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+        </section>
+
+        <!-- ================= ATELIER 4 : TECH LAB ================= -->
+        <section id="tab4" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-8">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-3 bg-purple-100 text-purple-600 rounded-xl text-xl"><i class="fa-solid fa-hands-holding-child"></i></div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-butcher-red">Atelier 4A : Gestes Techniques &amp; Hygiène (10 Termes)</h2>
+                            <p class="text-sm text-slate-500">Associez chaque geste ou opération français à son équivalent professionnel en anglais.</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200" id="matching-container"></div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-3 bg-amber-100 text-amber-600 rounded-xl text-xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div>
+                            <h3 class="text-xl font-bold text-butcher-red">Atelier 4B : Chasse aux Faux-Amis (6 Pièges Classiques)</h3>
+                            <p class="text-sm text-slate-500">Ne confondez pas ces mots qui se ressemblent entre le français et l'anglais !</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="false-friends-container"></div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="p-3 bg-emerald-100 text-emerald-700 rounded-xl text-xl"><i class="fa-solid fa-list-ol"></i></div>
+                        <div>
+                            <h3 class="text-xl font-bold text-butcher-red">Atelier 4C : Fiche Technique — De la Livraison à la Vente</h3>
+                            <p class="text-sm text-slate-500">Remettez dans l'ordre chronologique (de l'étape 1 à 6) le parcours d'une pièce de bœuf, en anglais.</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2.5" id="recipe-order-container"></div>
+                </div>
+
+                <div class="flex flex-wrap justify-between items-center gap-4 pt-4 border-t border-slate-200">
+                    <div class="text-xs text-slate-500">
+                        Score Tech Lab : <span id="w4-score-display" class="font-bold text-butcher-red">0 / 220 pts</span>
+                    </div>
+                    <button onclick="checkW4Answers()" class="px-6 py-3 bg-butcher-gold hover:bg-amber-600 text-white font-bold rounded-xl shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-check-double"></i> Valider tout l'Atelier 4
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ATELIER 5 : PHRASEBOOK ================= -->
+        <section id="tab5" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
+                <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="p-3 bg-sky-100 text-sky-700 rounded-xl text-xl"><i class="fa-solid fa-book-open-reader"></i></div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-butcher-red">Atelier 5 : Survival Phrasebook &amp; Audio Trainer</h2>
+                            <p class="text-sm text-slate-500">Votre boîte à outils de poche : écoutez la prononciation et épinglez vos phrases favorites sur votre Boarding Pass.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-3 mb-6">
+                    <div class="relative flex-grow">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+                        <input type="text" id="phrasebook-search" oninput="renderPhrasebook()" placeholder="Rechercher un mot ou une phrase (ex: knife, beef, safety, help...)" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-butcher-gold">
+                    </div>
+                    <div class="flex flex-wrap gap-1.5">
+                        <button onclick="setPhraseFilter('all')" id="pb-filter-all" class="pb-filter-btn px-3 py-2 rounded-xl text-xs font-bold bg-butcher-red text-white transition">Tout</button>
+                        <button onclick="setPhraseFilter('tools')" id="pb-filter-tools" class="pb-filter-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Outils &amp; Atelier</button>
+                        <button onclick="setPhraseFilter('meats')" id="pb-filter-meats" class="pb-filter-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Viandes &amp; Pièces</button>
+                        <button onclick="setPhraseFilter('safety')" id="pb-filter-safety" class="pb-filter-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Sécurité &amp; Hygiène</button>
+                        <button onclick="setPhraseFilter('survival')" id="pb-filter-survival" class="pb-filter-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Phrases Réflexes</button>
+                    </div>
+                </div>
+
+                <div id="phrasebook-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+        </section>
+
+        <!-- ================= ATELIER 6 : BOARDING PASS ================= -->
+        <section id="tab6" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-3 bg-butcher-red text-amber-300 rounded-xl text-xl"><i class="fa-solid fa-plane-departure"></i></div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-butcher-red">Atelier 6 : Erasmus+ Boarding Pass Generator</h2>
+                        <p class="text-sm text-slate-500">Personnalisez votre passeport numérique synchronisé avec vos badges et imprimez-le en PDF !</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div class="lg:col-span-5 space-y-4 bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                        <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-1">Identité &amp; Spécialité</h3>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Prénom &amp; Nom</label>
+                            <input type="text" id="pass-name" placeholder="ex: Thomas DUBOIS" oninput="saveAndUpdatePass()" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-butcher-gold outline-none text-sm">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Classe / CFA</label>
+                                <input type="text" id="pass-class" placeholder="BP Boucher 1ère année" oninput="saveAndUpdatePass()" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-butcher-gold outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Spécialité</label>
+                                <select id="pass-specialty" onchange="saveAndUpdatePass()" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-butcher-gold outline-none text-xs">
+                                    <option value="Boucherie Tradition">Boucherie Tradition</option>
+                                    <option value="Boucherie-Charcuterie">Boucherie-Charcuterie</option>
+                                    <option value="Boucher-Traiteur">Boucher-Traiteur</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Pays de Destination Erasmus+</label>
+                            <select id="pass-country" onchange="saveAndUpdatePass()" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-butcher-gold outline-none text-sm">
+                                <option value="Ireland 🇮🇪">Irlande 🇮🇪 (Dublin / Cork)</option>
+                                <option value="United Kingdom 🇬🇧">Royaume-Uni 🇬🇧 (London / Edinburgh)</option>
+                                <option value="Malta 🇲🇹">Malte 🇲🇹 (Valletta)</option>
+                                <option value="Denmark 🇩🇰">Danemark 🇩🇰 (Copenhagen)</option>
+                                <option value="Netherlands 🇳🇱">Pays-Bas 🇳🇱 (Amsterdam)</option>
+                                <option value="European Union 🇪🇺">Autre Destination 🇪🇺</option>
+                            </select>
+                        </div>
+
+                        <hr class="border-slate-200 my-2">
+
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider">Mes 3 Mots Clés Favoris</h3>
+                            <button onclick="switchTab('tab5')" class="text-[11px] text-butcher-red underline font-semibold">Choisir dans le Phrasebook</button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <input type="text" id="pass-word1" placeholder="Boning Knife" oninput="saveAndUpdatePass()" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs">
+                            <input type="text" id="pass-word2" placeholder="Cold Chain" oninput="saveAndUpdatePass()" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs">
+                            <input type="text" id="pass-word3" placeholder="Trimming" oninput="saveAndUpdatePass()" class="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-lg text-xs">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Ma Phrase Réflexe Jour 1</label>
+                            <input type="text" id="pass-phrase" placeholder="Could you show me how you bone a shoulder here?" oninput="saveAndUpdatePass()" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-butcher-gold outline-none text-xs">
+                        </div>
+
+                        <div class="pt-2 flex flex-col sm:flex-row gap-2">
+                            <button onclick="generateOfficialPass()" class="flex-1 py-3 bg-butcher-gold hover:bg-amber-600 text-white font-bold rounded-xl shadow transition flex items-center justify-center gap-2 text-sm">
+                                <i class="fa-solid fa-stamp"></i> Valider mon Passeport
+                            </button>
+                            <button onclick="window.print()" class="py-3 px-4 bg-butcher-red hover:bg-slate-800 text-white font-bold rounded-xl shadow transition flex items-center justify-center gap-2 text-sm">
+                                <i class="fa-solid fa-print"></i> PDF / Imprimer
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-7">
+                        <div id="printable-boarding-pass" class="bg-gradient-to-br from-butcher-red via-slate-900 to-slate-800 text-white rounded-3xl p-6 md:p-8 shadow-2xl border-4 border-butcher-gold relative overflow-hidden">
+                            <i class="fa-solid fa-bone text-[190px] absolute -right-10 -bottom-10 text-white/5 pointer-events-none"></i>
+
+                            <div class="flex justify-between items-start border-b border-amber-500/30 pb-4 mb-5">
+                                <div>
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <span class="px-2.5 py-1 bg-butcher-gold text-butcher-red font-black text-xs rounded-md tracking-widest uppercase">OFFICIAL BOARDING PASS</span>
+                                        <span class="text-xs text-amber-300 tracking-wider font-semibold">ERASMUS+ VOCATIONAL MOBILITY</span>
+                                    </div>
+                                    <h3 class="text-2xl font-black text-white mt-1.5 tracking-tight">THE BUTCHER PASSPORT</h3>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-3xl text-butcher-gold"><i class="fa-solid fa-plane-departure"></i></span>
+                                    <span class="block text-[10px] font-mono text-slate-400 mt-1" id="preview-date">2026</span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5 text-sm">
+                                <div class="col-span-2 sm:col-span-1">
+                                    <span class="text-[10px] uppercase text-slate-400 font-bold block">APPRENTICE</span>
+                                    <span id="preview-name" class="font-bold text-amber-200 text-base break-words">Thomas DUBOIS</span>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] uppercase text-slate-400 font-bold block">CLASS / CFA</span>
+                                    <span id="preview-class" class="font-semibold text-slate-200 text-xs">BP Boucher 1ère année</span>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] uppercase text-slate-400 font-bold block">SPECIALTY</span>
+                                    <span id="preview-specialty" class="font-semibold text-amber-100 text-xs">Boucherie Tradition</span>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] uppercase text-slate-400 font-bold block">DESTINATION</span>
+                                    <span id="preview-country" class="font-bold text-emerald-400 text-xs">Ireland 🇮🇪</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-800/85 rounded-2xl p-4 border border-slate-700/80 space-y-3 mb-5">
+                                <div>
+                                    <span class="text-[10px] uppercase tracking-wider text-butcher-gold font-bold block mb-1.5">Key Vocabulary Mastered:</span>
+                                    <div class="flex flex-wrap gap-2 text-xs">
+                                        <span id="preview-w1" class="bg-slate-700 px-3 py-1 rounded-lg border border-slate-600 text-amber-100 font-mono">Boning Knife</span>
+                                        <span id="preview-w2" class="bg-slate-700 px-3 py-1 rounded-lg border border-slate-600 text-amber-100 font-mono">Cold Chain</span>
+                                        <span id="preview-w3" class="bg-slate-700 px-3 py-1 rounded-lg border border-slate-600 text-amber-100 font-mono">Trimming</span>
+                                    </div>
+                                </div>
+                                <div class="pt-2 border-t border-slate-700/60">
+                                    <span class="text-[10px] uppercase tracking-wider text-butcher-gold font-bold block mb-1">Day 1 Key Survival Phrase:</span>
+                                    <p id="preview-phrase" class="text-xs italic text-slate-200 font-serif">"Could you show me how you bone a shoulder here?"</p>
+                                </div>
+                            </div>
+
+                            <div class="mb-5">
+                                <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold block mb-2">Earned Erasmus+ Badges (<span id="preview-badge-count">0/8</span>) :</span>
+                                <div id="preview-badges-list" class="flex flex-wrap gap-2"></div>
+                            </div>
+
+                            <div class="flex justify-between items-center border-t border-amber-500/30 pt-4 text-xs">
+                                <div>
+                                    <span class="text-slate-400 block text-[10px]">CERTIFICATION RANK</span>
+                                    <span id="preview-status" class="font-extrabold text-butcher-gold text-sm">APPRENTI BOUCHER 🥩</span>
+                                    <span id="preview-sg-mention" class="block text-[11px] text-emerald-300 font-semibold mt-0.5"></span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-slate-400 block text-[10px]">VERIFIED SCORE</span>
+                                    <span id="preview-score" class="font-mono font-black text-xl text-emerald-400">0 PTS</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 mt-12 border-t border-slate-800 no-print">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-1.5">
+            <p class="font-semibold text-slate-300">The Butcher Passport — Section Anglais &amp; Boucherie BP 1ère année • Erasmus+ Mobility Preparation</p>
+            <p class="text-slate-500">Progression sauvegardée automatiquement sur cet appareil • Audio TTS intégré</p>
+        </div>
+    </footer>
+
+    <script>
+        const STORAGE_KEY = 'butcher_passport_erasmus_bp1_v1';
+        const MAX_SCORE = 715; // 120 (1A) + 30 (1B) + 120 (2) + 225 (3) + 220 (4)
+
+        // ================= BADGES =================
+        const badgeDefinitions = [
+            { id: 'early_riser', name: 'Early Riser', icon: 'fa-sun', desc: "Obtenir au moins 10 bonnes réponses sur 12 à l'atelier Cut & Match." },
+            { id: 'taboo_master', name: 'Taboo Master', icon: 'fa-fire', desc: "Maîtriser au moins 8 cartes sur 12 dans l'atelier Taboo Pro." },
+            { id: 'safety_first', name: 'Safety First', icon: 'fa-shield-halved', desc: "Obtenir la Fin Or ou Argent dans le scénario de Dublin (réception & sécurité) ou de Londres (hygiène & allergènes)." },
+            { id: 'smooth_talker', name: 'As du Serious Game', icon: 'fa-crown', desc: "Débloquer au moins une Fin Or (Confiance et Maîtrise ≥ 80%) dans le Serious Game." },
+            { id: 'precision_butcher', name: 'Precision Butcher', icon: 'fa-scale-balanced', desc: "Réussir le défi de conversions UK/US (°F/°C, oz/g, lb/kg)." },
+            { id: 'false_friend_hunter', name: 'False Friend Hunter', icon: 'fa-magnifying-glass-chart', desc: "Faire un sans-faute (6/6) sur la chasse aux Faux-Amis." },
+            { id: 'chain_decoder', name: 'Chain Decoder', icon: 'fa-list-check', desc: "Remettre dans l'ordre exact les 6 étapes de la livraison à la vente." },
+            { id: 'erasmus_ready', name: 'Erasmus Ready', icon: 'fa-plane-circle-check', desc: "Atteindre 300 points globaux et valider son Boarding Pass." }
+        ];
+
+        // ================= ATELIER 1A : 12 TERMES =================
+        const w1Data = [
+            { id: 1, cat: 'equipment', term: "Boning Knife", options: ["Couteau à désosser", "Hachoir", "Crochet à viande", "Fusil à aiguiser"], correct: 0, tip: "Lame fine et rigide pour séparer la viande de l'os." },
+            { id: 2, cat: 'equipment', term: "Cleaver", options: ["Scie à os", "Feuille de boucher / couperet", "Plan de travail", "Balance"], correct: 1, tip: "Lame large et lourde pour trancher les os et les articulations." },
+            { id: 3, cat: 'equipment', term: "Meat Grinder", options: ["Hachoir", "Poussoir à saucisses", "Trancheuse", "Machine sous vide"], correct: 0, tip: "Aussi appelé 'Mincer' en anglais britannique." },
+            { id: 4, cat: 'equipment', term: "Band Saw", options: ["Trancheuse à jambon", "Scie à ruban", "Fusil", "Cutter"], correct: 1, tip: "Sert à scier les os : machine dangereuse, protections obligatoires." },
+            { id: 5, cat: 'cuts', term: "Carcass", options: ["Carcasse", "Abats", "Gras de couverture", "Os à moelle"], correct: 0, tip: "L'animal abattu, après habillage, avant la découpe." },
+            { id: 6, cat: 'cuts', term: "Brisket", options: ["Épaule", "Poitrine de bœuf", "Filet", "Rumsteck"], correct: 1, tip: "Pièce du devant, idéale pour les cuissons longues." },
+            { id: 7, cat: 'cuts', term: "Sirloin", options: ["Joue", "Jarret", "Faux-filet / aloyau", "Collier"], correct: 2, tip: "Pièce de l'arrière du dos, très appréciée pour les grillades." },
+            { id: 8, cat: 'cuts', term: "Tenderloin", options: ["Filet", "Entrecôte", "Basses côtes", "Onglet"], correct: 0, tip: "La pièce la plus tendre. On dit aussi 'Fillet' en anglais britannique." },
+            { id: 9, cat: 'process', term: "Trimming", options: ["Parage", "Hachage", "Salage", "Ficelage"], correct: 0, tip: "On retire le gras en excès, les nerfs et les parties abîmées." },
+            { id: 10, cat: 'process', term: "Deboning", options: ["Maturation", "Désossage", "Bridage", "Tranchage"], correct: 1, tip: "Séparer la viande des os. Aussi dit 'Boning'." },
+            { id: 11, cat: 'process', term: "Trussing", options: ["Fumage", "Marinade", "Bridage / ficelage", "Décongélation"], correct: 2, tip: "On ficelle un rôti pour qu'il garde sa forme à la cuisson." },
+            { id: 12, cat: 'process', term: "Dry-Aging", options: ["Maturation à sec", "Congélation", "Saumurage", "Cuisson sous vide"], correct: 0, tip: "La viande repose en chambre froide contrôlée pour développer sa saveur." }
+        ];
+
+        // ================= ATELIER 1B : CONVERSIONS =================
+        const conversionQuizData = [
+            { q: "1. Une recette anglaise indique de cuire un rôti de bœuf à 135°F à cœur (saignant). Quelle température réglez-vous en °C ?", options: ["57°C", "67°C", "47°C"], correct: 0 },
+            { q: "2. Un manuel américain indique de stocker la viande fraîche à 41°F maximum. Quelle est la température en °C ?", options: ["0°C", "5°C", "10°C"], correct: 1 },
+            { q: "3. Un client britannique commande 2 lb de bœuf haché. Combien de grammes pesez-vous ?", options: ["600 g", "1 200 g", "907 g"], correct: 2 }
+        ];
+
+        // ================= ATELIER 2 : TABOO =================
+        const tabooData = [
+            { word: "BONING KNIFE", translation: "Couteau à désosser", forbidden: ["Cut", "Bone", "Blade", "Meat"], desc: "A slim, very sharp tool used to free the flesh from the skeleton." },
+            { word: "CLEAVER", translation: "Feuille de boucher", forbidden: ["Chop", "Heavy", "Knife", "Bone"], desc: "A large rectangular tool with a thick edge, used to hack through joints and ribs." },
+            { word: "MEAT GRINDER", translation: "Hachoir", forbidden: ["Mince", "Burger", "Machine", "Sausage"], desc: "An appliance with a rotating screw that pushes raw beef through a plate with small holes." },
+            { word: "CARCASS", translation: "Carcasse", forbidden: ["Animal", "Body", "Whole", "Dead"], desc: "What remains of a slaughtered beef, pig or lamb after skinning and gutting, before it is broken down." },
+            { word: "TRIMMING", translation: "Parage", forbidden: ["Fat", "Cut", "Remove", "Clean"], desc: "Getting rid of sinew, silver skin and excess white tissue so a piece looks neat and is ready to sell." },
+            { word: "DRY-AGING", translation: "Maturation à sec", forbidden: ["Hang", "Fridge", "Weeks", "Tender"], desc: "Letting a large piece rest uncovered in a controlled cold room so it develops deeper flavour." },
+            { word: "BUTCHER'S TWINE", translation: "Ficelle de boucher", forbidden: ["String", "Tie", "Roast", "Rope"], desc: "Strong cotton thread used to hold a joint in a neat shape while it cooks." },
+            { word: "SAUSAGE STUFFER", translation: "Poussoir à saucisses", forbidden: ["Casing", "Pork", "Fill", "Machine"], desc: "A device that pushes a seasoned minced mixture into a tube-shaped skin." },
+            { word: "COLD CHAIN", translation: "Chaîne du froid", forbidden: ["Fridge", "Temperature", "Freezer", "Ice"], desc: "The unbroken series of refrigerated steps from the slaughterhouse to the customer that keeps food safe." },
+            { word: "CHAIN MAIL GLOVE", translation: "Gant en maille métallique", forbidden: ["Steel", "Hand", "Protect", "Knife"], desc: "A safety item made of tiny interlocking rings, worn by the hand that holds the meat." },
+            { word: "TRACEABILITY", translation: "Traçabilité", forbidden: ["Label", "Origin", "Track", "Batch"], desc: "Being able to tell where an animal came from and follow a product through every step to the shop." },
+            { word: "CROSS-CONTAMINATION", translation: "Contamination croisée", forbidden: ["Bacteria", "Raw", "Cooked", "Spread"], desc: "When harmful germs pass from one food, board or tool to another that was clean." }
+        ];
+
+        // ================= ATELIER 3 : SERIOUS GAME =================
+        const seriousGameData = [
+            {
+                id: 'dublin_rush',
+                title: "Aventure 1 : Réception, Froid & Sécurité",
+                city: "Dublin 🇮🇪 • Murphy's Family Butchers",
+                masterName: "Head Butcher Liam",
+                summary: "6h du matin : livraison de quartiers de bœuf, contrôle de la chaîne du froid, désossage, viande hachée et client mécontent. 8 étapes d'immersion !",
+                startNode: 'n1',
+                nodes: {
+                    n1: {
+                        role: 'apprentice', step: 'Étape 1 / 8',
+                        speaker: 'Head Butcher Liam (Maître d’apprentissage)', avatar: 'fa-user-tie',
+                        location: 'Dublin • 06:00 AM', subtitle: 'Réception de la livraison de viande',
+                        context: "Vous commencez votre deuxième jour de stage chez Murphy's Family Butchers. Le camion frigorifique vient d'arriver avec quatre quartiers de bœuf.",
+                        speech: "Morning! The delivery truck is here with four beef quarters. Before we take them inside, what do we check first?",
+                        frHint: "Bonjour ! Le camion de livraison est là avec quatre quartiers de bœuf. Avant de les rentrer, que vérifie-t-on en premier ?",
+                        choices: [
+                            { text: "I'll check the meat temperature with the probe and compare the labels with the delivery note.", consequence: "Réflexe pro : on contrôle toujours la température et les étiquettes à la réception.", trustDelta: 10, masteryDelta: 10, next: 'n2_check' },
+                            { text: "I'll put them straight into the cold room to save time.", consequence: "Stocker sans contrôle peut cacher une rupture de la chaîne du froid.", trustDelta: -15, masteryDelta: -20, next: 'n2_mistake' },
+                            { text: "Could you show me what to check, Liam? I'm a bit nervous.", consequence: "Liam apprécie votre honnêteté et vous guide pas à pas.", trustDelta: 5, masteryDelta: 5, next: 'n2_guided' }
+                        ]
+                    },
+                    n2_check: {
+                        role: 'apprentice', step: 'Étape 2 / 8',
+                        speaker: 'Head Butcher Liam (Maître d’apprentissage)', avatar: 'fa-temperature-low',
+                        location: 'Dublin • 06:10 AM', subtitle: 'Lecture de la sonde',
+                        context: "La sonde plantée au cœur d'un quartier de bœuf affiche 3°C.",
+                        speech: "The probe says 3°C. The legal limit for fresh beef is 7°C. Is this delivery acceptable, and what do we do next?",
+                        frHint: "La sonde indique 3°C. La limite légale pour du bœuf frais est 7°C. La livraison est-elle acceptable, et que fait-on ensuite ?",
+                        choices: [
+                            { text: "Yes, 3°C is under 7°C. I'll write it in the temperature log and store the beef in the cold room at 0 to 4°C.", consequence: "Parfait : température conforme, enregistrée, puis stockage au froid.", trustDelta: 15, masteryDelta: 15, next: 'n3_ppe' },
+                            { text: "It's fine, no need to write anything down.", consequence: "Sans enregistrement, pas de traçabilité en cas de contrôle.", trustDelta: -10, masteryDelta: -10, next: 'n3_ppe' }
+                        ]
+                    },
+                    n2_mistake: {
+                        role: 'apprentice', step: 'Étape 2 / 8',
+                        speaker: 'Head Butcher Liam (Maître d’apprentissage)', avatar: 'fa-triangle-exclamation',
+                        location: 'Dublin • 06:10 AM', subtitle: 'Recadrage sur la chaîne du froid',
+                        context: "Liam vous arrête à la porte de la chambre froide.",
+                        speech: "Stop! If the cold chain was broken, we would put bad meat next to good meat. Always probe the meat and check the labels first!",
+                        frHint: "Stop ! Si la chaîne du froid a été rompue, on mettrait de la mauvaise viande à côté de la bonne. Toujours prendre la température et vérifier les étiquettes d'abord !",
+                        choices: [
+                            { text: "Sorry, Liam. I'll get the probe and check the labels now.", consequence: "Vous reconnaissez votre erreur et corrigez tout de suite.", trustDelta: 10, masteryDelta: 10, next: 'n3_ppe' },
+                            { text: "In France, nobody checks that every time.", consequence: "Liam fronce les sourcils : minimiser les règles d'hygiène entame sa confiance.", trustDelta: -15, masteryDelta: -10, next: 'n3_ppe' }
+                        ]
+                    },
+                    n2_guided: {
+                        role: 'apprentice', step: 'Étape 2 / 8',
+                        speaker: 'Head Butcher Liam (Maître d’apprentissage)', avatar: 'fa-hands-helping',
+                        location: 'Dublin • 06:10 AM', subtitle: 'Lecture des étiquettes et traçabilité',
+                        context: "Liam vous montre une étiquette de quartier de bœuf : pays d'origine, numéro d'abattoir, numéro de lot et date.",
+                        speech: "Look: origin, slaughter number, batch number and date. We write them in the traceability book. Why do we do this?",
+                        frHint: "Regarde : origine, numéro d'abattoir, numéro de lot et date. On les note dans le cahier de traçabilité. Pourquoi fait-on ça ?",
+                        choices: [
+                            { text: "So we can trace the meat back to the farm if there is a food safety problem.", consequence: "Exact : la traçabilité permet de retrouver l'origine et de retirer les lots à risque.", trustDelta: 15, masteryDelta: 15, next: 'n3_ppe' },
+                            { text: "Only because the inspector asks for it.", consequence: "Ce n'est pas qu'une formalité : la traçabilité protège les clients.", trustDelta: -5, masteryDelta: -5, next: 'n3_ppe' }
+                        ]
+                    },
+                    n3_ppe: {
+                        role: 'apprentice', step: 'Étape 3 / 8',
+                        speaker: 'Head Butcher Liam (Maître d’apprentissage)', avatar: 'fa-shield-halved',
+                        location: 'Dublin • 07:00 AM', subtitle: 'Équipement de protection',
+                        context: "Il est temps de découper un quartier de bœuf. Liam regarde votre tenue de travail.",
+                        speech: "Before you start, show me your safety gear. What are you wearing, and which hand holds the knife?",
+                        frHint: "Avant de commencer, montre-moi ton équipement de sécurité. Que portes-tu, et quelle main tient le couteau ?",
+                        choices: [
+                            { text: "I'm wearing my apron, non-slip shoes and a chain mail glove on the hand that holds the meat.", consequence: "Équipement complet : le gant de maille protège la main qui tient la viande.", trustDelta: 20, masteryDelta: 15, next: 'n4_master' },
+                            { text: "I don't need a glove. It's slower and I'm careful.", consequence: "Un gant de maille évite les blessures graves : refuser de le porter est dangereux.", trustDelta: -20, masteryDelta: -15, next: 'n4_master' }
+                        ]
+                    },
+                    n4_master: {
+                        role: 'master', step: 'Étape 4 / 8 • Rôle du Maître d’Apprentissage',
+                        speaker: 'Vous incarnez Head Butcher Liam (Maître d’apprentissage)', avatar: 'fa-user-check',
+                        location: 'Dublin • 08:15 AM (Point de vue du Tuteur)', subtitle: 'Bascule de rôle : un client mécontent',
+                        context: "🔄 CHANGEMENT DE RÔLE : Vous êtes Liam. Un client revient au comptoir : le rôti acheté hier était dur.",
+                        speech: "[Pensée de Liam] A customer says the beef I sold him was tough. Let's see how our French apprentice handles customer service in English.",
+                        frHint: "[Pensée de Liam] Un client dit que le bœuf vendu était dur. Voyons comment notre apprenti français gère la relation client en anglais.",
+                        choices: [
+                            { text: "« I'll listen politely, explain that this cut needs slow cooking, and suggest a more tender cut for roasting next time. »", consequence: "Excellente écoute et vrai conseil de boucher !", trustDelta: 20, masteryDelta: 15, next: 'n5_boning' },
+                            { text: "« Tell him it's his fault, he doesn't know how to cook. »", consequence: "Réponse inacceptable : le client ne reviendra jamais.", trustDelta: -25, masteryDelta: -10, next: 'n5_boning' }
+                        ]
+                    },
+                    n5_boning: {
+                        role: 'apprentice', step: 'Étape 5 / 8',
+                        speaker: 'Head Butcher Liam (Maître d’apprentissage)', avatar: 'fa-bone',
+                        location: 'Dublin • 09:00 AM', subtitle: 'Désossage d’une épaule de porc',
+                        context: "De retour à l'atelier, Liam vous confie une épaule de porc à désosser.",
+                        speech: "Show me how you bone this pork shoulder. Where do you put the blade, and which way does it move?",
+                        frHint: "Montre-moi comment tu désosses cette épaule de porc. Où places-tu la lame et dans quel sens la bouges-tu ?",
+                        choices: [
+                            { text: "I'll follow the bone with the tip of the knife, keep the blade close to the bone and always cut away from my body.", consequence: "Geste sûr et précis : peu de perte de viande et aucun risque.", trustDelta: 15, masteryDelta: 20, next: 'n6_mince' },
+                            { text: "I'll push hard through the meat toward me, it's faster.", consequence: "Danger ! Couper vers soi cause des blessures et abîme la viande.", trustDelta: -15, masteryDelta: -20, next: 'n6_mince' }
+                        ]
+                    },
+                    n6_mince: {
+                        role: 'apprentice', step: 'Étape 6 / 8',
+                        speaker: 'Head Butcher Liam (Maître d’apprentissage)', avatar: 'fa-snowflake',
+                        location: 'Dublin • 09:45 AM', subtitle: 'Préparation de viande hachée',
+                        context: "Un client commande 5 kg de bœuf haché. Il faut préparer le hachoir.",
+                        speech: "We need 5 kilos of minced beef. What do you do before and while using the grinder?",
+                        frHint: "Il nous faut 5 kilos de bœuf haché. Que fais-tu avant et pendant l'utilisation du hachoir ?",
+                        choices: [
+                            { text: "I'll wash and sanitise the grinder, use very cold meat, wash my hands, and write the batch number in the log.", consequence: "Hygiène irréprochable : la viande hachée est un produit à risque.", trustDelta: 15, masteryDelta: 15, next: 'n7_chat' },
+                            { text: "I'll use meat that has been on the bench for two hours so it's softer.", consequence: "La viande tiède favorise les bactéries : la viande hachée doit rester très froide.", trustDelta: -20, masteryDelta: -15, next: 'n7_chat' }
+                        ]
+                    },
+                    n7_chat: {
+                        role: 'apprentice', step: 'Étape 7 / 8',
+                        speaker: 'Butcher Sean (Collègue)', avatar: 'fa-mug-saucer',
+                        location: 'Dublin • 10:15 AM', subtitle: 'Pause café et intégration dans l’équipe',
+                        context: "C'est l'heure d'une courte pause. Sean, le boucher adjoint, discute avec vous en anglais.",
+                        speech: "Good work this morning! How long have you been training as a butcher in France, and what do you want to learn here?",
+                        frHint: "Beau travail ce matin ! Depuis combien de temps te formes-tu au métier de boucher en France, et qu'as-tu envie d'apprendre ici ?",
+                        choices: [
+                            { text: "I'm in my first year at my CFA. I'd love to learn more about Irish beef cuts and how you mature meat.", consequence: "Échange chaleureux qui montre votre motivation.", trustDelta: 15, masteryDelta: 15, next: 'n8_final' },
+                            { text: "Nothing special. I just want the day to finish.", consequence: "Réponse fermée qui coupe la conversation et laisse une mauvaise impression.", trustDelta: -5, masteryDelta: 0, next: 'n8_final' }
+                        ]
+                    },
+                    n8_final: {
+                        role: 'apprentice', step: 'Étape 8 / 8 • Bilan Final',
+                        speaker: 'Head Butcher Liam (Maître d’apprentissage)', avatar: 'fa-award',
+                        location: 'Dublin • 10:45 AM', subtitle: 'Évaluation globale de la matinée',
+                        context: "La matinée s'achève. Liam rassemble l'équipe pour faire le bilan avec vous.",
+                        speech: "The shop is busy and the meat looks great. How do you feel about your technical progress and your English today?",
+                        frHint: "La boutique est pleine et la viande est superbe. Comment évalues-tu tes progrès techniques et ton anglais aujourd'hui ?",
+                        choices: [
+                            { text: "I feel more confident with safety rules, boning and technical English. Thank you for your help, Liam!", consequence: "Conclusion parfaite, dans l'esprit d'une mobilité Erasmus+ réussie.", trustDelta: 20, masteryDelta: 20, next: 'ENDING' },
+                            { text: "It was okay. I'm tired.", consequence: "Un peu expéditif pour conclure une belle matinée d'apprentissage.", trustDelta: -5, masteryDelta: 0, next: 'ENDING' }
+                        ]
+                    }
+                }
+            },
+            {
+                id: 'london_allergen',
+                title: "Aventure 2 : Hygiène, Allergènes & Inspection",
+                city: "London 🇬🇧 • Borough Meat Co.",
+                masterName: "Master Butcher Sarah",
+                summary: "Une cliente cœliaque, un contrôle surprise de l'hygiène, des planches de couleur, un étiquetage et un calcul de commande. 8 étapes !",
+                startNode: 'l1',
+                nodes: {
+                    l1: {
+                        role: 'apprentice', step: 'Étape 1 / 8',
+                        speaker: 'Customer Clara (Cliente en boutique)', avatar: 'fa-store',
+                        location: 'London • 10:30 AM', subtitle: 'Question critique d’une cliente sur les allergènes',
+                        context: "Sarah vous demande de tenir le comptoir dix minutes. Une cliente s'approche de la vitrine des saucisses.",
+                        speech: "Excuse me, I'm coeliac, so I can't eat gluten. Are your traditional pork sausages gluten-free?",
+                        frHint: "Excusez-moi, je suis cœliaque, je ne peux pas manger de gluten. Vos saucisses de porc traditionnelles sont-elles sans gluten ?",
+                        choices: [
+                            { text: "One moment please, I'll check the ingredients and allergen sheet and ask Master Butcher Sarah.", consequence: "Réflexe vital : on ne devine jamais, on vérifie la fiche allergènes.", trustDelta: 15, masteryDelta: 15, next: 'l2_check' },
+                            { text: "Yes, it's just meat and spices, so it's totally safe for you!", consequence: "Erreur critique ! Les saucisses contiennent souvent de la chapelure (gluten).", trustDelta: -25, masteryDelta: -25, next: 'l2_danger' }
+                        ]
+                    },
+                    l2_check: {
+                        role: 'apprentice', step: 'Étape 2 / 8',
+                        speaker: 'Master Butcher Sarah (Maître d’apprentissage)', avatar: 'fa-clipboard-check',
+                        location: 'London • 10:35 AM', subtitle: 'Vérification de la fiche allergènes',
+                        context: "Sarah vous montre la fiche : les saucisses traditionnelles contiennent de la chapelure de blé. Une recette sans gluten existe, mais elle est préparée sur la même table.",
+                        speech: "Well done for not guessing! Our traditional sausages contain wheat rusk. The gluten-free ones are made on the same table. What do you tell Clara?",
+                        frHint: "Bravo de ne pas avoir deviné ! Nos saucisses traditionnelles contiennent de la chapelure de blé. Celles sans gluten sont faites sur la même table. Que dis-tu à Clara ?",
+                        choices: [
+                            { text: "I'll explain that the traditional ones contain gluten, offer the gluten-free ones, and tell her about the possible cross-contact.", consequence: "Explication honnête, claire et rassurante.", trustDelta: 15, masteryDelta: 15, next: 'l3_boards' },
+                            { text: "I'll tell her to buy the traditional ones, there's only a little bit of rusk.", consequence: "Inacceptable : même une petite quantité est dangereuse pour une personne cœliaque.", trustDelta: -20, masteryDelta: -20, next: 'l3_boards' }
+                        ]
+                    },
+                    l2_danger: {
+                        role: 'apprentice', step: 'Étape 2 / 8',
+                        speaker: 'Master Butcher Sarah (Maître d’apprentissage)', avatar: 'fa-circle-exclamation',
+                        location: 'London • 10:33 AM', subtitle: 'Intervention immédiate de Sarah',
+                        context: "Sarah entend votre réponse depuis l'arrière-boutique et intervient avant que la cliente n'achète.",
+                        speech: "Stop right there! Never say a product is safe without checking the allergen sheet! Wheat rusk is a major allergen. What do you do now?",
+                        frHint: "Stop ! Ne dis jamais qu'un produit est sûr sans vérifier la fiche allergènes ! La chapelure de blé est un allergène majeur. Que fais-tu maintenant ?",
+                        choices: [
+                            { text: "I'm sorry, Sarah. I'll check the allergen sheet right away and find a safe option for her.", consequence: "Vous présentez vos excuses et corrigez immédiatement.", trustDelta: 10, masteryDelta: 10, next: 'l3_boards' },
+                            { text: "She probably just doesn't like bread.", consequence: "Attitude dangereuse : une maladie cœliaque n'est pas un caprice.", trustDelta: -20, masteryDelta: -20, next: 'l3_boards' }
+                        ]
+                    },
+                    l3_boards: {
+                        role: 'apprentice', step: 'Étape 3 / 8',
+                        speaker: 'Inspector Brown (Environmental Health)', avatar: 'fa-shield-halved',
+                        location: 'London • 11:00 AM', subtitle: 'Contrôle surprise d’hygiène',
+                        context: "Un inspecteur de l'hygiène arrive sans prévenir et observe votre poste de travail.",
+                        speech: "Good morning, I'm Inspector Brown from the council. Which chopping board do you use for raw meat, and can I see your fridge temperature log?",
+                        frHint: "Bonjour, je suis l'inspecteur Brown de la mairie. Quelle planche utilisez-vous pour la viande crue, et puis-je voir votre registre de températures ?",
+                        choices: [
+                            { text: "We use the red board for raw meat and the yellow one for cooked meat. Here is the fridge log, up to date.", consequence: "Code couleur maîtrisé et registre à jour : l'inspecteur est en confiance.", trustDelta: 20, masteryDelta: 15, next: 'l4_master' },
+                            { text: "Any board works if I wipe it, and I'll hide these unlabelled trays under the table.", consequence: "Cacher des bacs non étiquetés pendant un contrôle est sanctionné immédiatement.", trustDelta: -25, masteryDelta: -20, next: 'l4_master' }
+                        ]
+                    },
+                    l4_master: {
+                        role: 'master', step: 'Étape 4 / 8 • Rôle du Maître d’Apprentissage',
+                        speaker: 'Vous incarnez Master Butcher Sarah (Maître d’apprentissage)', avatar: 'fa-user-shield',
+                        location: 'London • 11:45 AM (Point de vue du Tuteur)', subtitle: 'Bascule de rôle : nettoyage du hachoir',
+                        context: "🔄 CHANGEMENT DE RÔLE : Vous êtes Sarah. Après l'inspection, vous briefez votre apprenti sur le nettoyage du hachoir avant de préparer des saucisses sans gluten.",
+                        speech: "[Pensée de Sarah] We must clean the mincer completely before making the gluten-free sausages. How should I instruct my apprentice?",
+                        frHint: "[Pensée de Sarah] Nous devons nettoyer complètement le hachoir avant de faire les saucisses sans gluten. Comment dois-je instruire mon apprenti ?",
+                        choices: [
+                            { text: "« Take the grinder apart, wash all the parts, rinse, sanitise, and write the time in the cleaning log. »", consequence: "Protocole parfait : démontage, nettoyage, désinfection et traçabilité.", trustDelta: 15, masteryDelta: 15, next: 'l5_label' },
+                            { text: "« Just wipe it with a dry cloth and start. »", consequence: "Nettoyage insuffisant : les résidus d'allergènes restent dans la machine.", trustDelta: -20, masteryDelta: -15, next: 'l5_label' }
+                        ]
+                    },
+                    l5_label: {
+                        role: 'apprentice', step: 'Étape 5 / 8',
+                        speaker: 'Master Butcher Sarah (Maître d’apprentissage)', avatar: 'fa-tags',
+                        location: 'London • 12:30 PM', subtitle: 'Étiquetage des produits maison',
+                        context: "Les saucisses sans gluten sont prêtes. Il faut préparer l'étiquette avant la mise en vente.",
+                        speech: "What must be on the label of our homemade sausages before we put them on sale?",
+                        frHint: "Que doit-il y avoir sur l'étiquette de nos saucisses maison avant la mise en vente ?",
+                        choices: [
+                            { text: "The product name, the ingredients with allergens in bold, the weight, the use-by date and the batch number.", consequence: "Étiquette complète et conforme.", trustDelta: 15, masteryDelta: 15, next: 'l6_burgers' },
+                            { text: "Just the price. Customers will ask if they want to know more.", consequence: "Insuffisant : les allergènes et les dates sont obligatoires.", trustDelta: -15, masteryDelta: -15, next: 'l6_burgers' }
+                        ]
+                    },
+                    l6_burgers: {
+                        role: 'apprentice', step: 'Étape 6 / 8',
+                        speaker: 'Master Butcher Sarah (Maître d’apprentissage)', avatar: 'fa-calculator',
+                        location: 'London • 01:30 PM', subtitle: 'Calcul d’une grosse commande',
+                        context: "Commande de dernière minute : 40 burgers de bœuf pour 16h. Chaque steak haché pèse 6 oz (environ 170 g).",
+                        speech: "We need 40 beef patties of 6 oz each by 4 PM. How much minced beef do we need in kilos?",
+                        frHint: "Il nous faut 40 steaks hachés de 6 oz chacun pour 16h. De combien de kilos de bœuf haché avons-nous besoin ?",
+                        choices: [
+                            { text: "40 times 170 grams is 6.8 kilos, so I'll weigh out 7 kilos of minced beef.", consequence: "Calcul exact et marge raisonnable.", trustDelta: 15, masteryDelta: 15, next: 'l7_waste' },
+                            { text: "About 2 kilos should be enough.", consequence: "40 × 170 g = 6,8 kg : 2 kg ne suffirait pas du tout.", trustDelta: -15, masteryDelta: -15, next: 'l7_waste' }
+                        ]
+                    },
+                    l7_waste: {
+                        role: 'apprentice', step: 'Étape 7 / 8',
+                        speaker: 'Master Butcher Sarah (Maître d’apprentissage)', avatar: 'fa-recycle',
+                        location: 'London • 03:30 PM', subtitle: 'Gestion des parures et des dates limites',
+                        context: "En fin de journée, il reste des parures et de la viande qui approche de sa date limite.",
+                        speech: "What should we do with the trimmings and the meat close to its use-by date, according to our waste policy?",
+                        frHint: "Que devons-nous faire des parures et de la viande proche de sa date limite, selon notre politique anti-gaspillage ?",
+                        choices: [
+                            { text: "Use the trimmings for sausages or stock, freeze meat before its use-by date with a clear label, and send the bones to be recycled.", consequence: "Valorisation des produits dans le respect des règles d'hygiène.", trustDelta: 15, masteryDelta: 15, next: 'l8_final' },
+                            { text: "Put it back on display with a new date on the label.", consequence: "Falsifier une date est illégal et dangereux pour la santé des clients.", trustDelta: -25, masteryDelta: -20, next: 'l8_final' }
+                        ]
+                    },
+                    l8_final: {
+                        role: 'apprentice', step: 'Étape 8 / 8 • Bilan et Clôture',
+                        speaker: 'Master Butcher Sarah (Maître d’apprentissage)', avatar: 'fa-award',
+                        location: 'London • 05:00 PM', subtitle: 'Rapport d’inspection validé',
+                        context: "L'inspecteur a validé la boucherie avec la note maximale : « 5-Star Hygiene Rating ». Sarah vous félicite.",
+                        speech: "We got the five-star hygiene rating from the council, thanks to your careful work with allergens today. Well done!",
+                        frHint: "Nous avons obtenu la note de cinq étoiles en hygiène grâce à votre rigueur avec les allergènes aujourd'hui. Bravo !",
+                        choices: [
+                            { text: "Thank you, Sarah! I learned how important allergens, hygiene and teamwork are.", consequence: "Conclusion mémorable d'une mobilité Erasmus+ réussie.", trustDelta: 20, masteryDelta: 20, next: 'ENDING' },
+                            { text: "I was just doing what my school taught me.", consequence: "Un peu modeste, mais le résultat est là.", trustDelta: 5, masteryDelta: 10, next: 'ENDING' }
+                        ]
+                    }
+                }
+            },
+            {
+                id: 'copenhagen_pork',
+                title: "Aventure 3 : Porc Danois, Saumure & Conversions",
+                city: "Copenhagen 🇩🇰 • Nordic Meat Atelier",
+                masterName: "Master Butcher Henrik",
+                summary: "Couenne croustillante, recette en °F et lb, calcul de saumure, frikadeller et contrôle qualité en chambre froide. 8 étapes !",
+                startNode: 'c1',
+                nodes: {
+                    c1: {
+                        role: 'apprentice', step: 'Étape 1 / 8',
+                        speaker: 'Master Butcher Henrik (Maître d’apprentissage)', avatar: 'fa-bacon',
+                        location: 'Copenhagen • 06:30 AM', subtitle: 'Préparation d’un rôti de porc à la danoise',
+                        context: "À Copenhague, toute l'équipe parle anglais. Henrik vous demande de préparer une poitrine de porc avec une couenne croustillante.",
+                        speech: "Welcome! We are preparing Danish roast pork with crispy crackling. How will you prepare the skin of this pork belly?",
+                        frHint: "Bienvenue ! Nous préparons un rôti de porc danois avec une couenne croustillante. Comment prépares-tu la couenne de cette poitrine ?",
+                        choices: [
+                            { text: "I'll dry the skin and make thin parallel cuts in the rind, without going into the meat.", consequence: "Parfait : une couenne sèche et bien incisée devient croustillante.", trustDelta: 15, masteryDelta: 15, next: 'c2_units' },
+                            { text: "I'll cut deep into the meat so the fat can run out.", consequence: "Trop profond : la viande se dessèche et la couenne ne croustille pas.", trustDelta: -15, masteryDelta: -20, next: 'c2_units' }
+                        ]
+                    },
+                    c2_units: {
+                        role: 'apprentice', step: 'Étape 2 / 8',
+                        speaker: 'Master Butcher Henrik (Maître d’apprentissage)', avatar: 'fa-scale-balanced',
+                        location: 'Copenhagen • 07:30 AM', subtitle: 'Lecture d’une recette en unités anglo-saxonnes',
+                        context: "Henrik vous donne une recette d'un partenaire britannique, écrite en livres et en degrés Fahrenheit.",
+                        speech: "The UK recipe says 2 lb of pork belly and an oven at 320°F. What are the metric values?",
+                        frHint: "La recette britannique indique 2 lb de poitrine de porc et un four à 320°F. Quelles sont les valeurs métriques ?",
+                        choices: [
+                            { text: "2 lb is about 907 grams, and 320°F is 160°C.", consequence: "Conversions exactes !", trustDelta: 15, masteryDelta: 20, next: 'c3_brine' },
+                            { text: "2 lb is 200 grams, and 320°F is 200°C.", consequence: "Attention : 1 lb ≈ 454 g, donc 2 lb ≈ 907 g, et 320°F = 160°C.", trustDelta: -10, masteryDelta: -15, next: 'c3_brine' }
+                        ]
+                    },
+                    c3_brine: {
+                        role: 'apprentice', step: 'Étape 3 / 8',
+                        speaker: 'Master Butcher Henrik (Maître d’apprentissage)', avatar: 'fa-droplet',
+                        location: 'Copenhagen • 08:15 AM', subtitle: 'Calcul d’une saumure',
+                        context: "Henrik prépare une saumure pour du jambon. Il faut calculer la quantité de sel.",
+                        speech: "We need a 5% brine for 3 litres of water. How many grams of salt do we need?",
+                        frHint: "Il nous faut une saumure à 5 % pour 3 litres d'eau. De combien de grammes de sel avons-nous besoin ?",
+                        choices: [
+                            { text: "5% of 3,000 grams is 150 grams of salt.", consequence: "Calcul de pourcentage parfait !", trustDelta: 20, masteryDelta: 20, next: 'c4_master' },
+                            { text: "15 grams should be enough.", consequence: "5 % de 3 000 g = 150 g ; 15 g donnerait une saumure beaucoup trop faible.", trustDelta: -15, masteryDelta: -15, next: 'c4_master' }
+                        ]
+                    },
+                    c4_master: {
+                        role: 'master', step: 'Étape 4 / 8 • Rôle du Maître d’Apprentissage',
+                        speaker: 'Vous incarnez Master Butcher Henrik (Maître d’apprentissage)', avatar: 'fa-chalkboard-user',
+                        location: 'Copenhagen • 09:15 AM (Point de vue du Tuteur)', subtitle: 'Bascule de rôle : atelier partagé franco-danois',
+                        context: "🔄 CHANGEMENT DE RÔLE : Vous êtes Henrik. Votre apprenti français a déjà de bons gestes de base. Comment organisez-vous le partage de savoir-faire ?",
+                        speech: "[Pensée de Henrik] Our French apprentice has good knife skills. How can we organise a shared workshop with our young Danish butchers?",
+                        frHint: "[Pensée de Henrik] Notre apprenti français a de bons gestes de couteau. Comment organiser un atelier partagé avec nos jeunes bouchers danois ?",
+                        choices: [
+                            { text: "« Let's do a joint workshop: you show French trussing and boning, and we show you Danish dry curing. »", consequence: "L'esprit Erasmus+ : un échange de savoir-faire dans les deux sens !", trustDelta: 20, masteryDelta: 15, next: 'c5_meatballs' },
+                            { text: "« Just tell them to watch silently while you clean the floor alone. »", consequence: "Dommage : cela prive l'équipe d'un échange interculturel formateur.", trustDelta: -15, masteryDelta: -10, next: 'c5_meatballs' }
+                        ]
+                    },
+                    c5_meatballs: {
+                        role: 'apprentice', step: 'Étape 5 / 8',
+                        speaker: 'Master Butcher Henrik (Maître d’apprentissage)', avatar: 'fa-bowl-food',
+                        location: 'Copenhagen • 10:00 AM', subtitle: 'Préparation des frikadeller (boulettes danoises)',
+                        context: "C'est l'heure de préparer les frikadeller, les boulettes de viande danoises.",
+                        speech: "We mix minced pork and veal for the meatballs. How do you keep the mixture safe and tasty?",
+                        frHint: "Nous mélangeons du porc haché et du veau pour les boulettes. Comment gardes-tu le mélange sain et savoureux ?",
+                        choices: [
+                            { text: "I'll keep the meat very cold, mix it gently, and wash my hands and the bowl well.", consequence: "Froid, douceur et hygiène : les trois clés d'une bonne farce.", trustDelta: 15, masteryDelta: 20, next: 'c6_quality' },
+                            { text: "I'll leave the mix on the bench until it's warm and easy to shape.", consequence: "Danger : la farce tiède favorise la prolifération des bactéries.", trustDelta: -15, masteryDelta: -15, next: 'c6_quality' }
+                        ]
+                    },
+                    c6_quality: {
+                        role: 'apprentice', step: 'Étape 6 / 8',
+                        speaker: 'Master Butcher Henrik (Maître d’apprentissage)', avatar: 'fa-magnifying-glass',
+                        location: 'Copenhagen • 11:00 AM', subtitle: 'Contrôle qualité en chambre froide',
+                        context: "En contrôlant la chambre froide, vous remarquez qu'une pièce de bœuf sent mauvais et semble gluante.",
+                        speech: "One piece of beef smells sour and feels slimy. What do we do?",
+                        frHint: "Une pièce de bœuf sent l'aigre et est gluante. Que faisons-nous ?",
+                        choices: [
+                            { text: "I'll set it aside, tell Henrik, and record it in the log. We won't sell it.", consequence: "Bon réflexe : une viande douteuse n'est jamais vendue.", trustDelta: 15, masteryDelta: 15, next: 'c7_display' },
+                            { text: "I'll rinse it with water and put it on display.", consequence: "Très dangereux : laver ne rend pas une viande avariée consommable.", trustDelta: -25, masteryDelta: -20, next: 'c7_display' }
+                        ]
+                    },
+                    c7_display: {
+                        role: 'apprentice', step: 'Étape 7 / 8',
+                        speaker: 'Master Butcher Henrik (Maître d’apprentissage)', avatar: 'fa-shop',
+                        location: 'Copenhagen • 11:45 AM', subtitle: 'Mise en valeur de la vitrine réfrigérée',
+                        context: "Il faut garnir la vitrine réfrigérée avant l'ouverture.",
+                        speech: "How should we arrange the cuts in the display to attract customers and keep them safe?",
+                        frHint: "Comment devons-nous disposer les pièces en vitrine pour attirer les clients tout en restant sûrs ?",
+                        choices: [
+                            { text: "I'll group the cuts by type, add clear English labels with the price per kilo and use-by date, and keep the display cold.", consequence: "Présentation professionnelle, informative et conforme.", trustDelta: 15, masteryDelta: 15, next: 'c8_final' },
+                            { text: "I'll pile everything in a box without labels.", consequence: "Aucune présentation commerciale ni information client.", trustDelta: -15, masteryDelta: -10, next: 'c8_final' }
+                        ]
+                    },
+                    c8_final: {
+                        role: 'apprentice', step: 'Étape 8 / 8 • Bilan Nordique',
+                        speaker: 'Master Butcher Henrik (Maître d’apprentissage)', avatar: 'fa-award',
+                        location: 'Copenhagen • 01:00 PM', subtitle: 'Dégustation finale et attestation Erasmus+',
+                        context: "L'équipe s'assoit pour goûter les frikadeller et le rôti. Henrik signe votre attestation de stage.",
+                        speech: "Tak for hjælpen! Thanks for your great work. How would you sum up your time in Denmark?",
+                        frHint: "Merci pour ton aide ! Merci pour ton super travail. Comment résumerais-tu ton séjour au Danemark ?",
+                        choices: [
+                            { text: "It was a great experience. I learned new curing techniques and became more confident in English!", consequence: "Conclusion inspirante pour toute mobilité Erasmus+.", trustDelta: 20, masteryDelta: 20, next: 'ENDING' },
+                            { text: "It was cold, but the meat was good.", consequence: "Un peu laconique, mais l'essentiel est acquis.", trustDelta: 5, masteryDelta: 5, next: 'ENDING' }
+                        ]
+                    }
+                }
+            }
+        ];
+
+        // ================= ATELIER 4A : 10 GESTES =================
+        const matchingData = [
+            { fr: "Affûtage", en: "Sharpening" },
+            { fr: "Saumurage", en: "Brining" },
+            { fr: "Hachage", en: "Mincing" },
+            { fr: "Tranchage", en: "Slicing" },
+            { fr: "Fumage", en: "Smoking" },
+            { fr: "Mise sous vide", en: "Vacuum packing" },
+            { fr: "Étiquetage", en: "Labelling" },
+            { fr: "Portionnage", en: "Portioning" },
+            { fr: "Nettoyage-désinfection", en: "Cleaning and sanitising" },
+            { fr: "Découpe en pièces principales", en: "Breaking down primal cuts" }
+        ];
+
+        // ================= ATELIER 4B : 6 FAUX-AMIS =================
+        const falseFriendsData = [
+            { q: "1. 'Put on your clean white _____ and your hairnet.' (Blouse de travail)", options: ["Blouse", "Work coat"], correct: 1, explain: "WORK COAT / SMOCK = blouse de travail. BLOUSE en anglais est un vêtement féminin (chemisier)." },
+            { q: "2. 'These sausages contain no artificial _____.' (Conservateurs)", options: ["Preservatives", "Conservatives"], correct: 0, explain: "PRESERVATIVES = conservateurs alimentaires. CONSERVATIVES = conservateurs politiques." },
+            { q: "3. 'Check the _____ date on the label.' (Date limite de consommation)", options: ["Use-by", "Limit"], correct: 0, explain: "USE-BY DATE = DLC. 'Limit date' n'existe pas en anglais." },
+            { q: "4. 'Put the pork on the _____ to weigh it.' (Balance)", options: ["Balance", "Scale"], correct: 1, explain: "SCALE = balance de pesée. BALANCE = équilibre ou solde bancaire." },
+            { q: "5. 'Check the _____ temperature with the probe.' (Température à cœur)", options: ["Core", "Heart"], correct: 0, explain: "CORE = cœur d'une pièce (centre). HEART = cœur (organe)." },
+            { q: "6. 'Smoked pork belly sliced for breakfast is called _____.' (Lard fumé)", options: ["Lard", "Bacon"], correct: 1, explain: "BACON = lard fumé. LARD = saindoux (graisse de porc fondue)." }
+        ];
+
+        // ================= ATELIER 4C : 6 ÉTAPES =================
+        const correctRecipeSteps = [
+            { id: 'step1', label: "1. Receiving & Checking", desc: "Check the temperature with a probe, read the labels and compare them with the delivery note." },
+            { id: 'step2', label: "2. Cold Storage", desc: "Store the meat in the cold room at 0 to 4°C, using first in, first out." },
+            { id: 'step3', label: "3. Breaking Down & Boning", desc: "Cut the quarter into primal cuts and remove the bones with a boning knife." },
+            { id: 'step4', label: "4. Trimming & Portioning", desc: "Remove excess fat and sinew, then cut the meat into steaks or roasts." },
+            { id: 'step5', label: "5. Trussing & Labelling", desc: "Tie the roasts with twine, wrap the meat, and add a label with weight and use-by date." },
+            { id: 'step6', label: "6. Chilled Display & Sale", desc: "Place the products in the cold display case and serve the customers safely." }
+        ];
+
+        // ================= ATELIER 5 : PHRASEBOOK =================
+        const catLabels = { tools: 'Outils', meats: 'Viandes', safety: 'Sécurité', survival: 'Réflexe' };
+        const phrasebookData = [
+            { cat: 'tools', en: "Where is the boning knife?", fr: "Où est le couteau à désosser ?", phon: "/weər ɪz ðə ˈbəʊnɪŋ naɪf/" },
+            { cat: 'tools', en: "Can I use the mincer now?", fr: "Puis-je utiliser le hachoir maintenant ?", phon: "/kæn aɪ juːz ðə ˈmɪnsə naʊ/" },
+            { cat: 'tools', en: "Could you show me how to sharpen this knife?", fr: "Pouvez-vous me montrer comment affûter ce couteau ?", phon: "/kʊd juː ʃəʊ miː haʊ tuː ˈʃɑːpən/" },
+            { cat: 'tools', en: "The band saw is switched off.", fr: "La scie à ruban est éteinte.", phon: "/ðə bænd sɔː ɪz swɪtʃt ɒf/" },
+            { cat: 'meats', en: "Is this beef or veal?", fr: "Est-ce du bœuf ou du veau ?", phon: "/ɪz ðɪs biːf ɔː viːl/" },
+            { cat: 'meats', en: "How much does this joint weigh?", fr: "Combien pèse ce rôti ?", phon: "/haʊ mʌtʃ dʌz ðɪs dʒɔɪnt weɪ/" },
+            { cat: 'meats', en: "We are running low on minced pork.", fr: "Nous manquons bientôt de porc haché.", phon: "/wiː ɑː ˈrʌnɪŋ ləʊ ɒn mɪnst pɔːk/" },
+            { cat: 'meats', en: "Do you want it sliced or in one piece?", fr: "Vous le voulez en tranches ou en un seul morceau ?", phon: "/duː juː wɒnt ɪt slaɪst ɔːr ɪn wʌn piːs/" },
+            { cat: 'safety', en: "Careful, the knife is very sharp!", fr: "Attention, le couteau est très tranchant !", phon: "/ˈkeəfʊl ðə naɪf ɪz ˈveri ʃɑːp/" },
+            { cat: 'safety', en: "I'm wearing my chain mail glove.", fr: "Je porte mon gant en maille.", phon: "/aɪm ˈweərɪŋ maɪ tʃeɪn meɪl glʌv/" },
+            { cat: 'safety', en: "Where is the first aid kit?", fr: "Où se trouve la trousse de premiers secours ?", phon: "/weər ɪz ðə fɜːst eɪd kɪt/" },
+            { cat: 'safety', en: "Is this meat still within its use-by date?", fr: "Cette viande est-elle encore dans sa date limite ?", phon: "/ɪz ðɪs miːt stɪl wɪˈðɪn ɪts juːz baɪ deɪt/" },
+            { cat: 'survival', en: "Could you show me how you bone a shoulder here?", fr: "Pourriez-vous me montrer comment vous désossez une épaule ici ?", phon: "/kʊd juː ʃəʊ miː haʊ juː bəʊn ə ˈʃəʊldə/" },
+            { cat: 'survival', en: "Sorry, could you speak a bit more slowly, please?", fr: "Désolé, pourriez-vous parler un peu plus lentement ?", phon: "/kʊd juː spiːk ə bɪt mɔː ˈsləʊli/" },
+            { cat: 'survival', en: "What is my next task?", fr: "Quelle est ma prochaine tâche ?", phon: "/wɒt ɪz maɪ nekst tɑːsk/" },
+            { cat: 'survival', en: "Should I clean the bench now or later?", fr: "Dois-je nettoyer le plan de travail maintenant ou plus tard ?", phon: "/ʃʊd aɪ kliːn ðə bentʃ naʊ ɔː ˈleɪtə/" }
+        ];
+
+        // ================= ÉTAT =================
+        const defaultState = {
+            score: 0,
+            badges: {
+                early_riser: false, taboo_master: false, safety_first: false, smooth_talker: false,
+                precision_butcher: false, false_friend_hunter: false, chain_decoder: false, erasmus_ready: false
+            },
+            w1Answers: {}, w1Score: 0, w1Completed: false,
+            convCompleted: false, convScore: 0,
+            tabooMastered: [], tabooScore: 0,
+            sgEndings: {},
+            w4MatchAnswers: {}, w4FFAnswers: {},
+            w4RecipeOrder: ['step4', 'step1', 'step6', 'step3', 'step2', 'step5'],
+            w4Score: 0, w4Completed: false,
+            passValidated: false,
+            passport: {
+                name: 'Thomas DUBOIS',
+                class: 'BP Boucher 1ère année',
+                specialty: 'Boucherie Tradition',
+                country: 'Ireland 🇮🇪',
+                w1: 'Boning Knife',
+                w2: 'Cold Chain',
+                w3: 'Trimming',
+                phrase: 'Could you show me how you bone a shoulder here?'
+            }
+        };
+
+        let state = JSON.parse(JSON.stringify(defaultState));
+        let currentW1Filter = 'all';
+        let currentPbFilter = 'all';
+        let tabooTimeLeft = 45;
+        let tabooTimerId = null;
+
+        let sgSession = {
+            scenarioIdx: 0, currentNodeId: 'n1', trust: 50, mastery: 50,
+            history: [], lastConsequence: null, lastDelta: null, showTranslation: false
+        };
+
+        // ================= PERSISTANCE =================
+        function loadState() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    state = {
+                        ...JSON.parse(JSON.stringify(defaultState)),
+                        ...parsed,
+                        badges: { ...defaultState.badges, ...(parsed.badges || {}) },
+                        passport: { ...defaultState.passport, ...(parsed.passport || {}) }
+                    };
+                }
+            } catch (e) { console.warn("Erreur lecture localStorage:", e); }
+        }
+
+        function saveState() {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+            catch (e) { console.warn("Erreur sauvegarde localStorage:", e); }
+        }
+
+        // ================= AUDIO =================
+        function speakEnglish(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-GB';
+                utterance.rate = 0.92;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                showToast("Synthèse vocale non supportée sur ce navigateur.", "warning");
+            }
+        }
+
+        function playSound(type) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                if (type === 'correct') {
+                    osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+                    osc.frequency.setValueAtTime(880, ctx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                    osc.start(); osc.stop(ctx.currentTime + 0.25);
+                } else if (type === 'badge') {
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2);
+                    osc.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    osc.start(); osc.stop(ctx.currentTime + 0.45);
+                } else {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(200, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                    osc.start(); osc.stop(ctx.currentTime + 0.22);
+                }
+            } catch (e) {}
+        }
+
+        // ================= TOASTS & MODALE =================
+        function showToast(message, type = 'info', subtitle = '') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            let bgClass = 'bg-slate-900 border-slate-700 text-white';
+            let iconHtml = '<i class="fa-solid fa-circle-info text-butcher-gold"></i>';
+            if (type === 'success') {
+                bgClass = 'bg-emerald-900 border-emerald-500 text-white';
+                iconHtml = '<i class="fa-solid fa-circle-check text-emerald-300"></i>';
+            } else if (type === 'badge') {
+                bgClass = 'bg-gradient-to-r from-butcher-red to-slate-900 border-2 border-butcher-gold text-white shadow-2xl';
+                iconHtml = '<i class="fa-solid fa-trophy text-butcher-gold text-xl animate-bounce"></i>';
+            } else if (type === 'warning') {
+                bgClass = 'bg-amber-900 border-amber-500 text-amber-100';
+                iconHtml = '<i class="fa-solid fa-triangle-exclamation text-amber-300"></i>';
+            }
+            toast.className = `pointer-events-auto p-4 rounded-2xl border shadow-xl flex items-start gap-3 toast-enter ${bgClass}`;
+            toast.innerHTML = `
+                <div class="mt-0.5 text-lg shrink-0">${iconHtml}</div>
+                <div class="flex-grow">
+                    <div class="font-bold text-sm leading-snug">${message}</div>
+                    ${subtitle ? `<div class="text-xs text-slate-300 mt-0.5">${subtitle}</div>` : ''}
+                </div>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('toast-enter');
+                toast.classList.add('toast-exit');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        function openResetModal() {
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('modal-confirm-btn').onclick = () => {
+                localStorage.removeItem(STORAGE_KEY);
+                state = JSON.parse(JSON.stringify(defaultState));
+                saveState();
+                closeConfirmModal();
+                initAllViews();
+                showToast("Session réinitialisée avec succès.", "info");
+            };
+        }
+
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // ================= SCORE & BADGES =================
+        function recalculateScore() {
+            const sgTotal = Object.values(state.sgEndings).reduce((acc, item) => acc + (item.score || 0), 0);
+            state.score = state.w1Score + state.convScore + state.tabooScore + sgTotal + state.w4Score;
+            if (state.score >= 300 && state.passValidated && !state.badges.erasmus_ready) {
+                unlockBadge('erasmus_ready');
+            }
+            saveState();
+            updateHUD();
+            renderDashboard();
+            updateBoardingPassUI();
+        }
+
+        function unlockBadge(badgeKey) {
+            if (state.badges[badgeKey]) return;
+            state.badges[badgeKey] = true;
+            const bInfo = badgeDefinitions.find(b => b.id === badgeKey);
+            playSound('badge');
+            showToast(`🏆 Badge Débloqué : ${bInfo ? bInfo.name : badgeKey} !`, 'badge', bInfo ? bInfo.desc : '');
+            saveState();
+            updateHUD();
+            renderDashboard();
+            updateBoardingPassUI();
+        }
+
+        function getRankInfo(score) {
+            if (score >= 420) return { title: "Maître Artisan International 🏆" };
+            if (score >= 260) return { title: "Compagnon Erasmus+ ✈️" };
+            if (score >= 120) return { title: "Boucher Qualifié 🔪" };
+            return { title: "Apprenti Boucher 🥩" };
+        }
+
+        function updateHUD() {
+            const unlockedCount = Object.values(state.badges).filter(Boolean).length;
+            const rank = getRankInfo(state.score);
+            document.getElementById('global-score').innerText = `${state.score} PTS`;
+            document.getElementById('hud-badges-count').innerText = `${unlockedCount} / 8`;
+            document.getElementById('hud-rank').innerText = rank.title;
+        }
+
+        // ================= NAVIGATION =================
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-butcher-gold', 'text-butcher-gold');
+                btn.classList.add('border-transparent', 'text-slate-400');
+            });
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('border-transparent', 'text-slate-400');
+                activeBtn.classList.add('border-butcher-gold', 'text-butcher-gold');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ================= TABLEAU DE BORD =================
+        function renderDashboard() {
+            const pct = Math.min(100, Math.round((state.score / MAX_SCORE) * 100));
+            const rank = getRankInfo(state.score);
+            const unlockedCount = Object.values(state.badges).filter(Boolean).length;
+
+            document.getElementById('dash-percent').innerText = `${pct}%`;
+            document.getElementById('dash-progress-bar').style.width = `${pct}%`;
+            document.getElementById('dash-rank').innerText = rank.title;
+            document.getElementById('dash-score').innerText = `${state.score} / ${MAX_SCORE} PTS`;
+            document.getElementById('badge-room-summary').innerText = `${unlockedCount} / 8 Débloqués`;
+
+            const sgValues = Object.values(state.sgEndings);
+            const sgTotalScore = sgValues.reduce((a, b) => a + (b.score || 0), 0);
+            const vocabScore = state.w1Score + state.tabooScore;
+            const safetyScore =
+                (state.sgEndings['dublin_rush'] ? Math.min(50, Math.round(state.sgEndings['dublin_rush'].score * 0.6)) : 0) +
+                (state.sgEndings['london_allergen'] ? Math.min(50, Math.round(state.sgEndings['london_allergen'].score * 0.6)) : 0);
+            const techScore = state.convScore + state.w4Score;
+
+            const skills = [
+                { name: "Vocabulaire Boucherie", val: vocabScore, max: 240, icon: "fa-spell-check", color: "bg-amber-500" },
+                { name: "Hygiène & Sécurité", val: safetyScore, max: 90, icon: "fa-shield-halved", color: "bg-emerald-500" },
+                { name: "Serious Game & Oral", val: sgTotalScore, max: 225, icon: "fa-gamepad", color: "bg-sky-500" },
+                { name: "Savoir-Faire Technique", val: techScore, max: 250, icon: "fa-gears", color: "bg-purple-500" }
+            ];
+
+            document.getElementById('skills-grid').innerHTML = skills.map(sk => {
+                const p = Math.min(100, Math.round((sk.val / sk.max) * 100));
+                return `
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                <i class="fa-solid ${sk.icon} text-butcher-red"></i> ${sk.name}
+                            </span>
+                            <span class="text-xs font-black text-butcher-red">${p}%</span>
+                        </div>
+                        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                            <div class="${sk.color} h-full rounded-full transition-all duration-500" style="width: ${p}%"></div>
+                        </div>
+                        <span class="text-[11px] text-slate-500 mt-1.5 block">${sk.val} / ${sk.max} pts</span>
+                    </div>`;
+            }).join('');
+
+            document.getElementById('trophies-grid').innerHTML = badgeDefinitions.map(b => {
+                const unlocked = state.badges[b.id];
+                return `
+                    <div class="p-4 rounded-2xl border transition flex flex-col justify-between ${unlocked ? 'bg-gradient-to-br from-amber-50 to-white border-butcher-gold shadow-md' : 'bg-slate-50/70 border-slate-200 opacity-70'}">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${unlocked ? 'bg-butcher-gold text-butcher-red shadow' : 'bg-slate-200 text-slate-400'}">
+                                <i class="fa-solid ${b.icon}"></i>
+                            </div>
+                            <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${unlocked ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'}">
+                                ${unlocked ? 'Débloqué' : 'Verrouillé'}
+                            </span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm ${unlocked ? 'text-butcher-red' : 'text-slate-600'}">${b.name}</h4>
+                            <p class="text-[11px] text-slate-500 mt-1 leading-snug">${b.desc}</p>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            const sgDone = Object.keys(state.sgEndings).length;
+            const workshops = [
+                { tab: 'tab1', num: '1', title: 'Cut & Match + Conversions', desc: '12 termes techniques + défi °F/°C, oz/g et lb/kg', status: state.w1Completed && state.convCompleted ? 'Complété' : (state.w1Score > 0 || state.convScore > 0 ? 'En cours' : 'À faire'), pts: `${state.w1Score + state.convScore} pts` },
+                { tab: 'tab2', num: '2', title: 'Taboo & Flashcards Pro', desc: '12 cartes interactives avec audio TTS et chrono', status: state.tabooMastered.length >= 8 ? 'Complété' : (state.tabooMastered.length > 0 ? 'En cours' : 'À faire'), pts: `${state.tabooScore} pts` },
+                { tab: 'tab3', num: '3', title: 'Serious Game (Apprenti & Maître)', desc: '3 aventures à embranchements et fins multiples', status: sgDone === 3 ? 'Complété' : (sgDone > 0 ? `${sgDone}/3 Fins` : 'À jouer'), pts: `${sgTotalScore} pts` },
+                { tab: 'tab4', num: '4', title: 'Tech Lab & Fiche Technique', desc: '10 gestes, 6 faux-amis et ordre de la livraison à la vente', status: state.w4Completed ? 'Complété' : 'À faire', pts: `${state.w4Score} pts` },
+                { tab: 'tab5', num: '5', title: 'Survival Phrasebook', desc: '16 phrases réflexes avec audio et épinglage', status: 'Boîte à outils', pts: 'Audio TTS' },
+                { tab: 'tab6', num: '6', title: 'Erasmus+ Boarding Pass', desc: 'Générateur officiel imprimable avec badges', status: state.passValidated ? 'Validé' : 'À générer', pts: 'Certificat' }
+            ];
+
+            document.getElementById('workshops-overview-grid').innerHTML = workshops.map(w => `
+                <div onclick="switchTab('${w.tab}')" class="p-4 rounded-2xl border border-slate-200 hover:border-butcher-gold bg-slate-50/60 hover:bg-amber-50/40 cursor-pointer transition flex flex-col justify-between group">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="w-7 h-7 rounded-lg bg-butcher-red text-amber-300 font-black text-xs flex items-center justify-center">${w.num}</span>
+                            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${w.status === 'Complété' || w.status === 'Validé' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-800'}">${w.status}</span>
+                        </div>
+                        <h4 class="font-bold text-sm text-slate-900 group-hover:text-butcher-red">${w.title}</h4>
+                        <p class="text-xs text-slate-500 mt-1">${w.desc}</p>
+                    </div>
+                    <div class="mt-3 pt-2 border-t border-slate-200/70 flex justify-between items-center text-xs">
+                        <span class="font-mono font-bold text-slate-600">${w.pts}</span>
+                        <span class="font-bold text-butcher-red group-hover:translate-x-1 transition-transform">Ouvrir →</span>
+                    </div>
+                </div>`).join('');
+        }
+
+        // ================= ATELIER 3 : SERIOUS GAME =================
+        function renderSeriousGameCards() {
+            const container = document.getElementById('sg-scenario-cards');
+            const endingsUnlocked = Object.keys(state.sgEndings).length;
+            document.getElementById('sg-endings-count').innerText = `${endingsUnlocked} / ${seriousGameData.length}`;
+
+            container.innerHTML = seriousGameData.map((sc, idx) => {
+                const isSelected = sgSession.scenarioIdx === idx;
+                const savedEnd = state.sgEndings[sc.id];
+                let badgeHtml = `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-600">Non terminé</span>`;
+                if (savedEnd) {
+                    const tierColor = savedEnd.tier === 'gold'
+                        ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                        : (savedEnd.tier === 'silver' ? 'bg-slate-200 text-slate-800' : 'bg-orange-100 text-orange-800');
+                    badgeHtml = `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full ${tierColor}">${savedEnd.shortLabel} (+${savedEnd.score} pts)</span>`;
+                }
+                return `
+                    <div onclick="startSeriousGame(${idx})" class="p-4 rounded-2xl border-2 cursor-pointer transition flex flex-col justify-between ${isSelected ? 'border-butcher-gold bg-amber-50/70 shadow-md' : 'border-slate-200 hover:border-slate-300 bg-slate-50/40'}">
+                        <div>
+                            <div class="flex justify-between items-center gap-2 mb-1.5 flex-wrap">
+                                <span class="text-[11px] font-bold text-butcher-red">${sc.city}</span>
+                                ${badgeHtml}
+                            </div>
+                            <h3 class="font-extrabold text-sm text-slate-900 mb-1">${sc.title}</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed">${sc.summary}</p>
+                        </div>
+                        <div class="mt-3 pt-2 border-t border-slate-200/70 flex justify-between items-center text-xs">
+                            <span class="text-slate-500 font-semibold"><i class="fa-solid fa-user-tie text-butcher-gold mr-1"></i> ${sc.masterName}</span>
+                            <span class="font-bold text-butcher-red">${isSelected ? 'En cours' : 'Jouer →'}</span>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function startSeriousGame(idx) {
+            const sc = seriousGameData[idx];
+            sgSession = {
+                scenarioIdx: idx, currentNodeId: sc.startNode, trust: 50, mastery: 50,
+                history: [], lastConsequence: null, lastDelta: null, showTranslation: false
+            };
+            renderSeriousGameCards();
+            renderSeriousGameNode();
+        }
+
+        function restartCurrentSeriousGame() {
+            startSeriousGame(sgSession.scenarioIdx);
+            showToast("Scénario redémarré à l'étape 1.", "info");
+        }
+
+        function toggleSgTranslation() {
+            sgSession.showTranslation = !sgSession.showTranslation;
+            const hintEl = document.getElementById('sg-dialogue-fr-hint');
+            if (hintEl) hintEl.classList.toggle('hidden', !sgSession.showTranslation);
+        }
+
+        function speakSeriousGameLine() {
+            const sc = seriousGameData[sgSession.scenarioIdx];
+            if (sgSession.currentNodeId === 'ENDING') return;
+            const node = sc.nodes[sgSession.currentNodeId];
+            if (node && node.speech) {
+                speakEnglish(node.speech.replace(/^\[.*?\]\s*/, ''));
+            }
+        }
+
+        function updateSgGaugesUI() {
+            const t = Math.max(0, Math.min(100, sgSession.trust));
+            const m = Math.max(0, Math.min(100, sgSession.mastery));
+            document.getElementById('sg-trust-val').innerText = `${t}%`;
+            document.getElementById('sg-trust-bar').style.width = `${t}%`;
+            document.getElementById('sg-mastery-val').innerText = `${m}%`;
+            document.getElementById('sg-mastery-bar').style.width = `${m}%`;
+        }
+
+        function renderSeriousGameNode() {
+            const sc = seriousGameData[sgSession.scenarioIdx];
+            updateSgGaugesUI();
+
+            if (sgSession.currentNodeId === 'ENDING') {
+                renderSeriousGameEnding(sc);
+                return;
+            }
+
+            const node = sc.nodes[sgSession.currentNodeId];
+
+            const roleBadge = document.getElementById('sg-role-badge');
+            if (node.role === 'master') {
+                roleBadge.className = "px-3 py-1.5 rounded-xl bg-purple-500/20 border border-purple-400 text-purple-200 text-xs font-extrabold flex items-center gap-2";
+                roleBadge.innerHTML = `<i class="fa-solid fa-user-tie"></i> <span>RÔLE INVERSÉ : MAÎTRE D'APPRENTISSAGE ÉTRANGER</span>`;
+            } else {
+                roleBadge.className = "px-3 py-1.5 rounded-xl bg-butcher-gold/20 border border-butcher-gold text-amber-200 text-xs font-extrabold flex items-center gap-2";
+                roleBadge.innerHTML = `<i class="fa-solid fa-user-graduate"></i> <span>RÔLE : APPRENTI BOUCHER ERASMUS+</span>`;
+            }
+
+            document.getElementById('sg-step-badge').innerText = node.step;
+            document.getElementById('sg-speaker-name').innerText = node.speaker;
+            document.getElementById('sg-location-tag').innerText = node.location;
+            document.getElementById('sg-scene-subtitle').innerText = node.subtitle;
+            document.getElementById('sg-avatar').innerHTML = `<i class="fa-solid ${node.avatar}"></i>`;
+            document.getElementById('sg-context-box').innerText = node.context;
+            document.getElementById('sg-dialogue-text').innerText = `"${node.speech}"`;
+
+            const hintEl = document.getElementById('sg-dialogue-fr-hint');
+            hintEl.innerText = `🇫🇷 Traduction : ${node.frHint}`;
+            hintEl.classList.toggle('hidden', !sgSession.showTranslation);
+
+            const consBanner = document.getElementById('sg-consequence-banner');
+            if (sgSession.lastConsequence) {
+                const isPositive = sgSession.lastDelta >= 0;
+                consBanner.className = `p-4 rounded-2xl border text-xs sm:text-sm leading-relaxed block ${isPositive ? 'bg-emerald-950/80 border-emerald-500/50 text-emerald-200' : 'bg-red-950/80 border-red-500/50 text-red-200'}`;
+                consBanner.innerHTML = `
+                    <div class="font-bold mb-0.5">${isPositive ? '✅ Impact de votre décision précédente :' : '⚠️ Conséquence à la boucherie :'}</div>
+                    <div>${sgSession.lastConsequence}</div>`;
+            } else {
+                consBanner.className = "hidden p-4 rounded-2xl border text-xs sm:text-sm leading-relaxed";
+            }
+
+            const choicesEl = document.getElementById('sg-choices-container');
+            choicesEl.innerHTML = `
+                <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+                    ${node.role === 'master' ? 'Quelle décision prenez-vous en tant que Maître d’apprentissage ?' : 'Quelle réponse ou action choisissez-vous en anglais ?'}
+                </div>
+                ${node.choices.map((ch, cIdx) => `
+                    <button onclick="chooseSeriousGameOption(${cIdx})" class="w-full text-left p-4 bg-slate-800 hover:bg-slate-700/90 border border-slate-700 hover:border-butcher-gold rounded-2xl transition flex items-start gap-3.5 group">
+                        <span class="w-7 h-7 rounded-xl bg-slate-700 group-hover:bg-butcher-gold group-hover:text-butcher-red text-amber-300 flex items-center justify-center font-black text-xs shrink-0 transition">
+                            ${String.fromCharCode(65 + cIdx)}
+                        </span>
+                        <span class="text-xs sm:text-sm text-slate-100 leading-relaxed">${ch.text}</span>
+                    </button>`).join('')}`;
+        }
+
+        function chooseSeriousGameOption(choiceIdx) {
+            const sc = seriousGameData[sgSession.scenarioIdx];
+            const node = sc.nodes[sgSession.currentNodeId];
+            const chosen = node.choices[choiceIdx];
+
+            sgSession.trust = Math.max(0, Math.min(100, sgSession.trust + chosen.trustDelta));
+            sgSession.mastery = Math.max(0, Math.min(100, sgSession.mastery + chosen.masteryDelta));
+            sgSession.lastConsequence = chosen.consequence;
+            sgSession.lastDelta = chosen.trustDelta + chosen.masteryDelta;
+            sgSession.history.push({
+                step: node.step,
+                role: node.role === 'master' ? "Maître d'apprentissage" : "Apprenti",
+                choiceText: chosen.text,
+                positive: (chosen.trustDelta + chosen.masteryDelta) >= 0
+            });
+
+            playSound((chosen.trustDelta + chosen.masteryDelta) >= 0 ? 'correct' : 'wrong');
+            sgSession.currentNodeId = chosen.next;
+            renderSeriousGameNode();
+        }
+
+        function renderSeriousGameEnding(sc) {
+            const avg = Math.round((sgSession.trust + sgSession.mastery) / 2);
+            let tier = 'bronze';
+            let shortLabel = 'Fin Bronze';
+            let title = 'Fin Bronze : Recadrage & Vigilance Nécessaires 🥉';
+            let summary = `Vous avez terminé le service avec ${sc.masterName}, mais plusieurs erreurs techniques ou d'hygiène ont limité votre autonomie. Rejouez pour viser la Fin Or !`;
+            let earnedPts = 30;
+            let cardStyle = 'from-orange-950/80 to-slate-900 border-orange-500/60';
+
+            if (avg >= 80 && sgSession.trust >= 80 && sgSession.mastery >= 80) {
+                tier = 'gold';
+                shortLabel = 'Fin Or 🏆';
+                title = 'Fin Or : Autonomie Totale & Promesse d’Embauche ! 🏆';
+                summary = `Exceptionnel ! ${sc.masterName} salue votre maîtrise professionnelle, votre sens de l'hygiène et votre aisance en anglais. Vous êtes prêt pour les responsabilités de la boucherie !`;
+                earnedPts = 75;
+                cardStyle = 'from-amber-950/90 to-slate-900 border-butcher-gold';
+            } else if (avg >= 55) {
+                tier = 'silver';
+                shortLabel = 'Fin Argent 🥈';
+                title = 'Fin Argent : Stage Validé avec Encouragements 🥈';
+                summary = `Bon travail ! ${sc.masterName} apprécie votre implication et votre capacité à corriger vos erreurs. Quelques automatismes supplémentaires vous mèneront à l'excellence.`;
+                earnedPts = 50;
+                cardStyle = 'from-slate-800 to-slate-900 border-slate-400';
+            }
+
+            const prev = state.sgEndings[sc.id];
+            if (!prev || earnedPts >= prev.score) {
+                state.sgEndings[sc.id] = { tier, shortLabel, title, score: earnedPts };
+            }
+
+            if (tier === 'gold') unlockBadge('smooth_talker');
+            if ((sc.id === 'dublin_rush' || sc.id === 'london_allergen') && (tier === 'gold' || tier === 'silver')) {
+                unlockBadge('safety_first');
+            }
+
+            recalculateScore();
+            renderSeriousGameCards();
+
+            document.getElementById('sg-step-badge').innerText = 'DÉNOUEMENT';
+            document.getElementById('sg-consequence-banner').className = "hidden p-4 rounded-2xl border text-xs sm:text-sm leading-relaxed";
+            document.getElementById('sg-dialogue-fr-hint').classList.add('hidden');
+
+            document.getElementById('sg-choices-container').innerHTML = `
+                <div class="bg-gradient-to-br ${cardStyle} border-2 rounded-2xl p-6 space-y-4">
+                    <div class="flex flex-wrap justify-between items-center gap-2">
+                        <span class="px-3 py-1 rounded-full bg-butcher-gold text-butcher-red font-black text-xs uppercase tracking-wider">${shortLabel} • +${earnedPts} PTS</span>
+                        <span class="text-xs text-slate-300 font-mono">Confiance : ${sgSession.trust}% • Maîtrise : ${sgSession.mastery}%</span>
+                    </div>
+                    <h4 class="text-xl font-black text-white">${title}</h4>
+                    <p class="text-sm text-slate-200 leading-relaxed">${summary}</p>
+
+                    <div class="bg-slate-950/70 rounded-xl p-4 border border-slate-800 space-y-2">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-butcher-gold block">Votre parcours décisionnel :</span>
+                        ${sgSession.history.map(h => `
+                            <div class="text-xs flex items-start gap-2 text-slate-300">
+                                <span class="mt-0.5">${h.positive ? '🟢' : '🔴'}</span>
+                                <div><strong class="text-slate-200">[${h.role}]</strong> ${h.choiceText}</div>
+                            </div>`).join('')}
+                    </div>
+
+                    <div class="flex flex-wrap gap-3 pt-2">
+                        <button onclick="restartCurrentSeriousGame()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl border border-slate-600 transition flex items-center gap-2">
+                            <i class="fa-solid fa-rotate-left"></i> Explorer une autre fin
+                        </button>
+                        ${sgSession.scenarioIdx < seriousGameData.length - 1 ? `
+                            <button onclick="startSeriousGame(${sgSession.scenarioIdx + 1})" class="px-5 py-2.5 bg-butcher-gold hover:bg-amber-500 text-butcher-red text-xs font-extrabold rounded-xl shadow transition flex items-center gap-2">
+                                Aventure suivante <i class="fa-solid fa-arrow-right"></i>
+                            </button>` : `
+                            <button onclick="switchTab('tab6')" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold rounded-xl shadow transition flex items-center gap-2">
+                                Voir mon Boarding Pass <i class="fa-solid fa-passport"></i>
+                            </button>`}
+                    </div>
+                </div>`;
+        }
+
+        // ================= ATELIER 1A & 1B =================
+        function filterW1(cat) {
+            currentW1Filter = cat;
+            document.querySelectorAll('.w1-filter-btn').forEach(btn => {
+                btn.classList.remove('bg-butcher-red', 'text-white');
+                btn.classList.add('text-slate-600');
+            });
+            const active = document.getElementById(`w1-filter-${cat}`);
+            if (active) {
+                active.classList.add('bg-butcher-red', 'text-white');
+                active.classList.remove('text-slate-600');
+            }
+            renderW1();
+        }
+
+        function renderW1() {
+            const container = document.getElementById('w1-questions');
+            const filtered = currentW1Filter === 'all' ? w1Data : w1Data.filter(q => q.cat === currentW1Filter);
+
+            container.innerHTML = filtered.map(q => {
+                const savedVal = state.w1Answers[q.id] !== undefined ? state.w1Answers[q.id] : "";
+                return `
+                    <div class="p-4 rounded-xl border border-slate-200 bg-white hover:border-amber-300 transition shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start gap-2 mb-2">
+                                <label class="text-sm font-bold text-butcher-red">
+                                    ${q.id}. <span class="text-butcher-gold font-mono uppercase bg-amber-50 px-2 py-0.5 rounded border border-amber-200">${q.term}</span>
+                                </label>
+                                <button onclick="speakEnglish('${q.term.replace(/'/g, "\\'")}')" class="text-xs bg-slate-100 hover:bg-butcher-red hover:text-white text-slate-600 px-2.5 py-1 rounded-lg transition" title="Écouter la prononciation">
+                                    <i class="fa-solid fa-volume-high"></i>
+                                </button>
+                            </div>
+                            <select id="w1-select-${q.id}" onchange="onW1SelectChange(${q.id}, this.value)" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-700 outline-none focus:ring-2 focus:ring-butcher-gold">
+                                <option value="">-- Choisir la traduction française --</option>
+                                ${q.options.map((opt, oIdx) => `<option value="${oIdx}" ${String(savedVal) === String(oIdx) ? 'selected' : ''}>${opt}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div id="w1-fb-${q.id}" class="mt-2 text-xs hidden"></div>
+                    </div>`;
+            }).join('');
+            updateW1Progress();
+        }
+
+        function onW1SelectChange(qId, val) {
+            if (val === "") delete state.w1Answers[qId];
+            else state.w1Answers[qId] = val;
+            saveState();
+            updateW1Progress();
+        }
+
+        function updateW1Progress() {
+            const answered = Object.keys(state.w1Answers).length;
+            document.getElementById('w1-progress-text').innerText = `${answered} / ${w1Data.length}`;
+            document.getElementById('w1-score-display').innerText = `${state.w1Score} / 120 pts`;
+        }
+
+        function checkW1Answers() {
+            let correctCount = 0;
+            w1Data.forEach(q => {
+                const chosen = state.w1Answers[q.id];
+                const selectEl = document.getElementById(`w1-select-${q.id}`);
+                const fbEl = document.getElementById(`w1-fb-${q.id}`);
+                const ok = chosen !== undefined && parseInt(chosen) === q.correct;
+                if (ok) correctCount++;
+                if (selectEl) {
+                    selectEl.classList.remove('border-red-400', 'bg-red-50', 'border-emerald-500', 'bg-emerald-50');
+                    selectEl.classList.add(ok ? 'border-emerald-500' : 'border-red-400', ok ? 'bg-emerald-50' : 'bg-red-50');
+                }
+                if (fbEl) {
+                    fbEl.className = ok ? "mt-2 text-xs text-emerald-700 bg-emerald-50 p-2 rounded-lg block" : "mt-2 text-xs text-red-700 bg-red-50 p-2 rounded-lg block";
+                    fbEl.innerHTML = ok
+                        ? `<i class="fa-solid fa-check"></i> Exact ! ${q.tip}`
+                        : `<i class="fa-solid fa-xmark"></i> Réponse : <strong>${q.options[q.correct]}</strong>. ${q.tip}`;
+                }
+            });
+
+            state.w1Score = correctCount * 10;
+            state.w1Completed = true;
+            updateW1Progress();
+            recalculateScore();
+
+            if (correctCount >= 10) unlockBadge('early_riser');
+            playSound(correctCount >= 8 ? 'correct' : 'wrong');
+            showToast(`Atelier 1A validé : ${correctCount}/12 bonnes réponses (+${state.w1Score} pts)`, correctCount >= 8 ? 'success' : 'warning');
+        }
+
+        function convertTemp(from) {
+            const fEl = document.getElementById('conv-f');
+            const cEl = document.getElementById('conv-c');
+            if (from === 'F') {
+                const f = parseFloat(fEl.value);
+                cEl.value = isNaN(f) ? '' : Math.round(((f - 32) * 5) / 9);
+            } else {
+                const c = parseFloat(cEl.value);
+                fEl.value = isNaN(c) ? '' : Math.round((c * 9) / 5 + 32);
+            }
+        }
+
+        function convertWeight(from) {
+            const ozEl = document.getElementById('conv-oz');
+            const gEl = document.getElementById('conv-g');
+            if (from === 'OZ') {
+                const oz = parseFloat(ozEl.value);
+                gEl.value = isNaN(oz) ? '' : Math.round(oz * 28.35);
+            } else {
+                const g = parseFloat(gEl.value);
+                ozEl.value = isNaN(g) ? '' : (g / 28.35).toFixed(1);
+            }
+        }
+
+        function convertLb(from) {
+            const lbEl = document.getElementById('conv-lb');
+            const kgEl = document.getElementById('conv-kg');
+            if (from === 'LB') {
+                const lb = parseFloat(lbEl.value);
+                kgEl.value = isNaN(lb) ? '' : (lb * 0.4536).toFixed(2);
+            } else {
+                const kg = parseFloat(kgEl.value);
+                lbEl.value = isNaN(kg) ? '' : (kg / 0.4536).toFixed(1);
+            }
+        }
+
+        function renderConversionQuiz() {
+            document.getElementById('conversion-quiz-container').innerHTML = conversionQuizData.map((item, idx) => `
+                <div class="bg-white p-3 rounded-xl border border-slate-200">
+                    <p class="text-xs font-bold text-slate-800 mb-2">${item.q}</p>
+                    <div class="flex flex-wrap gap-2">
+                        ${item.options.map((opt, oIdx) => `
+                            <label class="flex items-center gap-1.5 text-xs bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 cursor-pointer hover:border-butcher-gold">
+                                <input type="radio" name="conv-q-${idx}" value="${oIdx}">
+                                <span class="font-semibold">${opt}</span>
+                            </label>`).join('')}
+                    </div>
+                </div>`).join('');
+        }
+
+        function checkConversionQuiz() {
+            let ok = 0;
+            conversionQuizData.forEach((item, idx) => {
+                document.getElementsByName(`conv-q-${idx}`).forEach(r => {
+                    if (r.checked && parseInt(r.value) === item.correct) ok++;
+                });
+            });
+            state.convScore = ok * 10;
+            state.convCompleted = true;
+            recalculateScore();
+
+            if (ok === 3) {
+                unlockBadge('precision_butcher');
+                playSound('correct');
+                showToast("Sans-faute sur les conversions UK/US ! (+30 pts)", "success");
+            } else {
+                playSound('wrong');
+                showToast(`Conversions : ${ok}/3 bonnes réponses (+${state.convScore} pts). Utilisez le convertisseur à gauche !`, "warning");
+            }
+        }
+
+        // ================= ATELIER 2 : TABOO =================
+        function renderTabooCards() {
+            const container = document.getElementById('flashcards-grid');
+            document.getElementById('taboo-mastered-count').innerText = `${state.tabooMastered.length} / ${tabooData.length}`;
+
+            container.innerHTML = tabooData.map((card, idx) => {
+                const isMastered = state.tabooMastered.includes(idx);
+                return `
+                    <div class="perspective-1000 h-72">
+                        <div id="taboo-card-${idx}" class="w-full h-full relative transform-style-3d transition-transform duration-500 rounded-2xl shadow-md border ${isMastered ? 'border-emerald-500 ring-2 ring-emerald-500/30' : 'border-slate-200'}">
+                            <div class="absolute inset-0 backface-hidden bg-gradient-to-br from-butcher-red to-slate-800 text-white rounded-2xl p-5 flex flex-col justify-between">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[11px] uppercase tracking-widest text-butcher-gold font-bold">CARD #${idx + 1}</span>
+                                    <div class="flex items-center gap-1.5">
+                                        <button onclick="event.stopPropagation(); speakEnglish('${card.word.replace(/'/g, "\\'")}')" class="w-8 h-8 rounded-lg bg-slate-700/80 hover:bg-butcher-gold hover:text-butcher-red text-amber-200 flex items-center justify-center transition" title="Écouter">
+                                            <i class="fa-solid fa-volume-high text-xs"></i>
+                                        </button>
+                                        ${isMastered ? '<span class="px-2 py-0.5 bg-emerald-500 text-white text-[10px] font-bold rounded-full"><i class="fa-solid fa-check"></i> OK</span>' : ''}
+                                    </div>
+                                </div>
+                                <div class="text-center my-auto cursor-pointer" onclick="flipCard(${idx})">
+                                    <h3 class="text-lg font-black text-amber-100 font-mono tracking-wider mb-1 break-words">${card.word}</h3>
+                                    <p class="text-xs text-slate-300 italic">(${card.translation})</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="flipCard(${idx})" class="flex-1 py-2 bg-slate-700/70 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl transition">
+                                        <i class="fa-solid fa-rotate mr-1"></i> Taboo &amp; Déf.
+                                    </button>
+                                    <button onclick="toggleTabooMastered(${idx})" class="px-3 py-2 ${isMastered ? 'bg-emerald-600 text-white' : 'bg-butcher-gold text-butcher-red hover:bg-amber-400'} text-xs font-extrabold rounded-xl transition">
+                                        ${isMastered ? 'Maîtrisé' : '+10 pts'}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="absolute inset-0 backface-hidden rotate-y-180 bg-amber-50 text-slate-800 rounded-2xl p-5 border-2 border-butcher-gold flex flex-col justify-between">
+                                <div>
+                                    <div class="text-center pb-2 border-b border-amber-200 mb-2">
+                                        <span class="text-[11px] font-extrabold text-red-600 uppercase tracking-wide"><i class="fa-solid fa-ban"></i> MOTS INTERDITS (TABOO)</span>
+                                        <div class="flex flex-wrap justify-center gap-1.5 mt-1.5">
+                                            ${card.forbidden.map(w => `<span class="bg-red-100 text-red-700 text-[11px] font-bold px-2 py-0.5 rounded-md border border-red-200">${w}</span>`).join('')}
+                                        </div>
+                                    </div>
+                                    <div class="mt-2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-[10px] font-bold text-slate-500 uppercase">ENGLISH CLUE:</span>
+                                            <button onclick="speakEnglish('${card.desc.replace(/'/g, "\\'")}')" class="text-xs text-butcher-red hover:text-butcher-gold"><i class="fa-solid fa-volume-high"></i></button>
+                                        </div>
+                                        <p class="text-xs text-slate-700 italic mt-1 leading-relaxed">"${card.desc}"</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2 pt-2">
+                                    <button onclick="flipCard(${idx})" class="flex-1 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-lg transition">Retourner</button>
+                                    <button onclick="toggleTabooMastered(${idx})" class="flex-1 py-1.5 ${isMastered ? 'bg-emerald-600 text-white' : 'bg-butcher-red text-white'} text-xs font-bold rounded-lg transition">
+                                        ${isMastered ? '✓ Trouvé' : 'Marquer Trouvé'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function flipCard(idx) {
+            const cardEl = document.getElementById(`taboo-card-${idx}`);
+            if (cardEl) cardEl.classList.toggle('rotate-y-180');
+        }
+
+        function toggleTabooMastered(idx) {
+            const pos = state.tabooMastered.indexOf(idx);
+            if (pos === -1) {
+                state.tabooMastered.push(idx);
+                playSound('correct');
+            } else {
+                state.tabooMastered.splice(pos, 1);
+            }
+            state.tabooScore = state.tabooMastered.length * 10;
+            recalculateScore();
+            renderTabooCards();
+            if (state.tabooMastered.length >= 8) unlockBadge('taboo_master');
+        }
+
+        function startTabooTimer() {
+            clearInterval(tabooTimerId);
+            const dur = parseInt(document.getElementById('taboo-duration').value) || 45;
+            tabooTimeLeft = dur;
+            const timerEl = document.getElementById('taboo-timer');
+            timerEl.innerText = `${tabooTimeLeft}s`;
+            timerEl.classList.remove('text-red-600');
+
+            tabooTimerId = setInterval(() => {
+                tabooTimeLeft--;
+                timerEl.innerText = `${tabooTimeLeft}s`;
+                if (tabooTimeLeft <= 10) timerEl.classList.add('text-red-600');
+                if (tabooTimeLeft <= 0) {
+                    clearInterval(tabooTimerId);
+                    playSound('wrong');
+                    showToast("⏰ Temps écoulé ! Passez la main au joueur suivant.", "warning");
+                }
+            }, 1000);
+        }
+
+        function resetTabooTimer() {
+            clearInterval(tabooTimerId);
+            const dur = parseInt(document.getElementById('taboo-duration').value) || 45;
+            tabooTimeLeft = dur;
+            const timerEl = document.getElementById('taboo-timer');
+            timerEl.innerText = `${tabooTimeLeft}s`;
+            timerEl.classList.remove('text-red-600');
+        }
+
+        // ================= ATELIER 4 : TECH LAB =================
+        function renderW4() {
+            const matchContainer = document.getElementById('matching-container');
+            const optionsList = matchingData.map(d => d.en).sort();
+
+            matchContainer.innerHTML = matchingData.map((item, idx) => {
+                const savedVal = state.w4MatchAnswers[idx] || "";
+                return `
+                    <div class="p-3 bg-white rounded-xl border border-slate-200 flex flex-col justify-between">
+                        <div class="flex justify-between items-center mb-1.5">
+                            <span class="text-xs font-bold text-butcher-red"><i class="fa-solid fa-bone text-amber-500 mr-1"></i> ${idx + 1}. ${item.fr}</span>
+                            <span id="match-badge-${idx}" class="text-[10px] font-bold hidden"></span>
+                        </div>
+                        <select id="match-select-${idx}" onchange="state.w4MatchAnswers[${idx}] = this.value; saveState();" class="p-2 bg-slate-50 border border-slate-300 rounded-lg text-xs text-slate-700 outline-none focus:ring-2 focus:ring-butcher-gold">
+                            <option value="">-- Choisir le terme anglais --</option>
+                            ${optionsList.map(opt => `<option value="${opt}" ${savedVal === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+                        </select>
+                    </div>`;
+            }).join('');
+
+            document.getElementById('false-friends-container').innerHTML = falseFriendsData.map((ff, idx) => {
+                const savedChoice = state.w4FFAnswers[idx];
+                return `
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                        <p class="text-xs sm:text-sm font-bold text-slate-800">${ff.q}</p>
+                        <div class="flex gap-3 flex-wrap">
+                            ${ff.options.map((opt, oIdx) => `
+                                <label class="flex items-center gap-2 text-xs bg-white px-3 py-2 rounded-lg border border-slate-200 cursor-pointer hover:border-butcher-gold">
+                                    <input type="radio" name="ff-${idx}" value="${oIdx}" ${savedChoice === oIdx ? 'checked' : ''} onchange="state.w4FFAnswers[${idx}] = ${oIdx}; saveState();">
+                                    <span class="font-bold text-slate-700">${opt}</span>
+                                </label>`).join('')}
+                        </div>
+                        <div id="ff-explain-${idx}" class="text-[11px] p-2 rounded-lg hidden"></div>
+                    </div>`;
+            }).join('');
+
+            renderRecipeOrder();
+            document.getElementById('w4-score-display').innerText = `${state.w4Score} / 220 pts`;
+        }
+
+        function renderRecipeOrder() {
+            const container = document.getElementById('recipe-order-container');
+            container.innerHTML = state.w4RecipeOrder.map((stepId, posIdx) => {
+                const stepObj = correctRecipeSteps.find(s => s.id === stepId);
+                return `
+                    <div class="bg-white p-3 rounded-xl border border-slate-200 flex items-center justify-between gap-3 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <span class="w-7 h-7 rounded-lg bg-butcher-red text-amber-300 font-black text-xs flex items-center justify-center shrink-0">#${posIdx + 1}</span>
+                            <div>
+                                <div class="font-bold text-xs sm:text-sm text-slate-800 flex items-center gap-2">
+                                    <span>${stepObj.label.replace(/^\d+\.\s*/, '')}</span>
+                                    <button onclick="speakEnglish('${stepObj.desc.replace(/'/g, "\\'")}')" class="text-slate-400 hover:text-butcher-red text-xs"><i class="fa-solid fa-volume-high"></i></button>
+                                </div>
+                                <p class="text-xs text-slate-500">${stepObj.desc}</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-1 shrink-0">
+                            <button onclick="moveRecipeStep(${posIdx}, -1)" ${posIdx === 0 ? 'disabled' : ''} class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 disabled:opacity-30 rounded text-xs text-slate-700"><i class="fa-solid fa-chevron-up"></i></button>
+                            <button onclick="moveRecipeStep(${posIdx}, 1)" ${posIdx === state.w4RecipeOrder.length - 1 ? 'disabled' : ''} class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 disabled:opacity-30 rounded text-xs text-slate-700"><i class="fa-solid fa-chevron-down"></i></button>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function moveRecipeStep(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= state.w4RecipeOrder.length) return;
+            const temp = state.w4RecipeOrder[index];
+            state.w4RecipeOrder[index] = state.w4RecipeOrder[newIndex];
+            state.w4RecipeOrder[newIndex] = temp;
+            saveState();
+            renderRecipeOrder();
+        }
+
+        function checkW4Answers() {
+            let matchPts = 0;
+            matchingData.forEach((item, idx) => {
+                const select = document.getElementById(`match-select-${idx}`);
+                const badge = document.getElementById(`match-badge-${idx}`);
+                select.classList.remove('border-red-400', 'bg-red-50', 'border-emerald-500', 'bg-emerald-50');
+                if (select.value === item.en) {
+                    matchPts += 10;
+                    select.classList.add('border-emerald-500', 'bg-emerald-50');
+                    badge.className = "text-[10px] font-bold text-emerald-600 block";
+                    badge.innerText = "✓ Correct";
+                } else {
+                    select.classList.add('border-red-400', 'bg-red-50');
+                    badge.className = "text-[10px] font-bold text-red-600 block";
+                    badge.innerText = `→ ${item.en}`;
+                }
+            });
+
+            let ffCorrect = 0;
+            falseFriendsData.forEach((ff, idx) => {
+                const expEl = document.getElementById(`ff-explain-${idx}`);
+                const chosen = state.w4FFAnswers[idx];
+                expEl.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'bg-red-50', 'text-red-800');
+                if (chosen === ff.correct) {
+                    ffCorrect++;
+                    expEl.classList.add('bg-emerald-50', 'text-emerald-800');
+                    expEl.innerHTML = `<i class="fa-solid fa-check"></i> <strong>Bravo !</strong> ${ff.explain}`;
+                } else {
+                    expEl.classList.add('bg-red-50', 'text-red-800');
+                    expEl.innerHTML = `<i class="fa-solid fa-xmark"></i> <strong>Piège !</strong> ${ff.explain}`;
+                }
+            });
+
+            let recipeCorrectSteps = 0;
+            state.w4RecipeOrder.forEach((stepId, idx) => {
+                if (stepId === correctRecipeSteps[idx].id) recipeCorrectSteps++;
+            });
+
+            const totalW4 = matchPts + (ffCorrect * 10) + (recipeCorrectSteps * 10);
+            state.w4Score = totalW4;
+            state.w4Completed = true;
+            document.getElementById('w4-score-display').innerText = `${totalW4} / 220 pts`;
+            recalculateScore();
+
+            if (ffCorrect === 6) unlockBadge('false_friend_hunter');
+            if (recipeCorrectSteps === 6) unlockBadge('chain_decoder');
+
+            playSound(totalW4 >= 140 ? 'correct' : 'wrong');
+            showToast(
+                `Tech Lab validé : ${totalW4} / 220 pts !`,
+                totalW4 >= 140 ? 'success' : 'warning',
+                `Gestes: ${matchPts / 10}/10 • Faux-Amis: ${ffCorrect}/6 • Fiche Technique: ${recipeCorrectSteps}/6`
+            );
+        }
+
+        // ================= ATELIER 5 : PHRASEBOOK =================
+        function setPhraseFilter(cat) {
+            currentPbFilter = cat;
+            document.querySelectorAll('.pb-filter-btn').forEach(btn => {
+                btn.classList.remove('bg-butcher-red', 'text-white');
+                btn.classList.add('bg-slate-100', 'text-slate-600');
+            });
+            const active = document.getElementById(`pb-filter-${cat}`);
+            if (active) {
+                active.classList.add('bg-butcher-red', 'text-white');
+                active.classList.remove('bg-slate-100', 'text-slate-600');
+            }
+            renderPhrasebook();
+        }
+
+        function renderPhrasebook() {
+            const query = (document.getElementById('phrasebook-search').value || '').toLowerCase();
+            const filtered = phrasebookData.filter(item => {
+                const matchCat = currentPbFilter === 'all' || item.cat === currentPbFilter;
+                const matchText = item.en.toLowerCase().includes(query) || item.fr.toLowerCase().includes(query);
+                return matchCat && matchText;
+            });
+
+            document.getElementById('phrasebook-grid').innerHTML = filtered.map(item => `
+                <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-butcher-gold transition flex flex-col justify-between gap-3">
+                    <div>
+                        <div class="flex justify-between items-start gap-2">
+                            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-100 text-amber-800">${catLabels[item.cat] || item.cat}</span>
+                            <button onclick="speakEnglish('${item.en.replace(/'/g, "\\'")}')" class="px-2.5 py-1 bg-butcher-red hover:bg-slate-700 text-amber-300 rounded-lg text-xs font-bold flex items-center gap-1.5 transition">
+                                <i class="fa-solid fa-volume-high"></i> Écouter
+                            </button>
+                        </div>
+                        <p class="font-bold text-slate-900 text-sm mt-2">"${item.en}"</p>
+                        <p class="text-[11px] font-mono text-slate-400 mt-0.5">${item.phon}</p>
+                        <p class="text-xs text-slate-600 mt-1.5 italic">${item.fr}</p>
+                    </div>
+                    <div class="pt-2 border-t border-slate-200/80 flex justify-end">
+                        <button onclick="pinToBoardingPass('${item.en.replace(/'/g, "\\'")}')" class="text-[11px] font-bold text-butcher-red hover:text-butcher-gold flex items-center gap-1 transition">
+                            <i class="fa-solid fa-thumbtack"></i> Épingler sur mon Boarding Pass
+                        </button>
+                    </div>
+                </div>`).join('');
+        }
+
+        function pinToBoardingPass(phrase) {
+            state.passport.phrase = phrase;
+            document.getElementById('pass-phrase').value = phrase;
+            saveAndUpdatePass();
+            showToast("Phrase épinglée sur votre Boarding Pass !", "success", `"${phrase}"`);
+        }
+
+        // ================= ATELIER 6 : BOARDING PASS =================
+        function hydrateBoardingPassInputs() {
+            document.getElementById('pass-name').value = state.passport.name;
+            document.getElementById('pass-class').value = state.passport.class;
+            document.getElementById('pass-specialty').value = state.passport.specialty;
+            document.getElementById('pass-country').value = state.passport.country;
+            document.getElementById('pass-word1').value = state.passport.w1;
+            document.getElementById('pass-word2').value = state.passport.w2;
+            document.getElementById('pass-word3').value = state.passport.w3;
+            document.getElementById('pass-phrase').value = state.passport.phrase;
+            updateBoardingPassUI();
+        }
+
+        function saveAndUpdatePass() {
+            state.passport = {
+                name: document.getElementById('pass-name').value || "Thomas DUBOIS",
+                class: document.getElementById('pass-class').value || "BP Boucher 1ère année",
+                specialty: document.getElementById('pass-specialty').value || "Boucherie Tradition",
+                country: document.getElementById('pass-country').value || "Ireland 🇮🇪",
+                w1: document.getElementById('pass-word1').value || "Boning Knife",
+                w2: document.getElementById('pass-word2').value || "Cold Chain",
+                w3: document.getElementById('pass-word3').value || "Trimming",
+                phrase: document.getElementById('pass-phrase').value || "Could you show me how you bone a shoulder here?"
+            };
+            saveState();
+            updateBoardingPassUI();
+        }
+
+        function updateBoardingPassUI() {
+            const p = state.passport;
+            const rank = getRankInfo(state.score);
+            const unlockedBadges = badgeDefinitions.filter(b => state.badges[b.id]);
+
+            document.getElementById('preview-name').innerText = p.name;
+            document.getElementById('preview-class').innerText = p.class;
+            document.getElementById('preview-specialty').innerText = p.specialty;
+            document.getElementById('preview-country').innerText = p.country;
+            document.getElementById('preview-w1').innerText = p.w1;
+            document.getElementById('preview-w2').innerText = p.w2;
+            document.getElementById('preview-w3').innerText = p.w3;
+            document.getElementById('preview-phrase').innerText = `"${p.phrase}"`;
+            document.getElementById('preview-score').innerText = `${state.score} PTS`;
+            document.getElementById('preview-status').innerText = rank.title.toUpperCase();
+            document.getElementById('preview-badge-count').innerText = `${unlockedBadges.length}/8`;
+            document.getElementById('preview-date').innerText = new Date().getFullYear();
+
+            const badgesListEl = document.getElementById('preview-badges-list');
+            if (unlockedBadges.length > 0) {
+                badgesListEl.innerHTML = unlockedBadges.map(b => `
+                    <span class="px-2.5 py-1 rounded-lg bg-butcher-gold/20 border border-butcher-gold/50 text-amber-200 text-[11px] font-bold flex items-center gap-1.5">
+                        <i class="fa-solid ${b.icon} text-butcher-gold"></i> ${b.name}
+                    </span>`).join('');
+            } else {
+                badgesListEl.innerHTML = `<span class="text-xs text-slate-400 italic">Complétez les ateliers pour afficher vos trophées officiels ici.</span>`;
+            }
+
+            const sgMentionEl = document.getElementById('preview-sg-mention');
+            const goldCount = Object.values(state.sgEndings).filter(e => e.tier === 'gold').length;
+            const totalEndings = Object.keys(state.sgEndings).length;
+            if (goldCount > 0) sgMentionEl.innerText = `★ Serious Game : ${goldCount} Fin(s) Or débloquée(s)`;
+            else if (totalEndings > 0) sgMentionEl.innerText = `✓ Serious Game : ${totalEndings}/3 aventures complétées`;
+            else sgMentionEl.innerText = '';
+        }
+
+        function generateOfficialPass() {
+            state.passValidated = true;
+            saveAndUpdatePass();
+            if (state.score >= 300) {
+                unlockBadge('erasmus_ready');
+                showToast("Passeport Erasmus+ certifié ! Vous êtes prêt pour le départ !", "success");
+            } else {
+                playSound('correct');
+                showToast("Boarding Pass enregistré !", "info", `Atteignez 300 PTS (actuellement ${state.score} PTS) pour débloquer le badge ultime Erasmus Ready.`);
+            }
+            recalculateScore();
+        }
+
+        // ================= INITIALISATION =================
+        function initAllViews() {
+            updateHUD();
+            renderDashboard();
+            renderW1();
+            renderConversionQuiz();
+            renderTabooCards();
+            startSeriousGame(0);
+            renderW4();
+            renderPhrasebook();
+            hydrateBoardingPassInputs();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            initAllViews();
+        });
+    </script>
+</body>
+</html>
