@@ -221,12 +221,12 @@
                         <div class="flex items-center gap-3">
                             <div class="p-3 bg-amber-100 text-butcher-amber rounded-xl text-xl"><i class="fa-solid fa-bolt"></i></div>
                             <div>
-                                <h2 class="text-2xl font-bold text-butcher-red">Atelier 1A : Cut &amp; Match (12 Termes Clés)</h2>
+                                <h2 class="text-2xl font-bold text-butcher-red">Atelier 1A : Cut &amp; Match (36 Termes Clés)</h2>
                                 <p class="text-sm text-slate-500">Écoutez la prononciation anglaise et associez chaque terme à sa traduction française.</p>
                             </div>
                         </div>
                         <div class="flex flex-wrap gap-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
-                            <button onclick="filterW1('all')" id="w1-filter-all" class="w1-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-butcher-red text-white transition">Tout (12)</button>
+                            <button onclick="filterW1('all')" id="w1-filter-all" class="w1-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-butcher-red text-white transition">Tout (36)</button>
                             <button onclick="filterW1('equipment')" id="w1-filter-equipment" class="w1-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:bg-white transition">Matériel</button>
                             <button onclick="filterW1('cuts')" id="w1-filter-cuts" class="w1-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:bg-white transition">Pièces</button>
                             <button onclick="filterW1('process')" id="w1-filter-process" class="w1-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:bg-white transition">Gestes</button>
@@ -239,12 +239,12 @@
                         <div class="flex items-center gap-4">
                             <div>
                                 <span class="text-xs text-slate-500 block">Réponses sélectionnées :</span>
-                                <span class="text-base font-bold text-butcher-red" id="w1-progress-text">0 / 12</span>
+                                <span class="text-base font-bold text-butcher-red" id="w1-progress-text">0 / 36</span>
                             </div>
                             <div class="h-8 w-px bg-slate-200"></div>
                             <div>
                                 <span class="text-xs text-slate-500 block">Score Atelier 1A :</span>
-                                <span class="text-base font-bold text-emerald-600" id="w1-score-display">0 / 120 pts</span>
+                                <span class="text-base font-bold text-emerald-600" id="w1-score-display">0 / 360 pts</span>
                             </div>
                         </div>
                         <button onclick="checkW1Answers()" class="px-6 py-3 bg-butcher-gold hover:bg-amber-600 text-white font-bold rounded-xl shadow transition flex items-center gap-2">
@@ -260,7 +260,7 @@
                         <div class="p-3 bg-blue-100 text-blue-700 rounded-xl text-xl"><i class="fa-solid fa-scale-balanced"></i></div>
                         <div>
                             <h3 class="text-xl font-bold text-butcher-red">Atelier 1B : Convertisseur &amp; Défi Unités Anglo-Saxonnes (°F / oz / lb)</h3>
-                            <p class="text-sm text-slate-500">Utilisez le convertisseur interactif pour résoudre les 3 problèmes de boucherie ci-dessous.</p>
+                            <p class="text-sm text-slate-500">Utilisez le convertisseur interactif pour résoudre les 9 problèmes de boucherie ci-dessous.</p>
                         </div>
                     </div>
 
@@ -416,7 +416,7 @@
                     <div class="flex items-center gap-3">
                         <div class="p-3 bg-red-100 text-red-600 rounded-xl text-xl"><i class="fa-solid fa-ban"></i></div>
                         <div>
-                            <h2 class="text-2xl font-bold text-butcher-red">Atelier 2 : Taboo &amp; Flashcards Pro (12 Cartes)</h2>
+                            <h2 class="text-2xl font-bold text-butcher-red">Atelier 2 : Taboo &amp; Flashcards Pro (36 Cartes)</h2>
                             <p class="text-sm text-slate-500">Faites deviner le terme à votre binôme en anglais SANS prononcer les mots interdits !</p>
                         </div>
                     </div>
@@ -424,7 +424,7 @@
                     <div class="flex flex-wrap items-center gap-3">
                         <div class="bg-emerald-50 border border-emerald-200 px-3.5 py-2 rounded-xl text-center">
                             <span class="text-[10px] text-emerald-700 font-bold uppercase block">Cartes Maîtrisées</span>
-                            <span id="taboo-mastered-count" class="text-lg font-black text-emerald-700">0 / 12</span>
+                            <span id="taboo-mastered-count" class="text-lg font-black text-emerald-700">0 / 36</span>
                         </div>
                         <div class="flex items-center gap-2 bg-slate-100 p-2 rounded-xl border border-slate-200">
                             <div class="text-center px-2">
@@ -492,7 +492,7 @@
 
                 <div class="flex flex-wrap justify-between items-center gap-4 pt-4 border-t border-slate-200">
                     <div class="text-xs text-slate-500">
-                        Score Tech Lab : <span id="w4-score-display" class="font-bold text-butcher-red">0 / 220 pts</span>
+                        Score Tech Lab : <span id="w4-score-display" class="font-bold text-butcher-red">0 / 540 pts</span>
                     </div>
                     <button onclick="checkW4Answers()" class="px-6 py-3 bg-butcher-gold hover:bg-amber-600 text-white font-bold rounded-xl shadow transition flex items-center gap-2">
                         <i class="fa-solid fa-check-double"></i> Valider tout l'Atelier 4
@@ -691,12 +691,12 @@
 
     <script>
         const STORAGE_KEY = 'butcher_passport_erasmus_bp1_v1';
-        const MAX_SCORE = 715; // 120 (1A) + 30 (1B) + 120 (2) + 225 (3) + 220 (4)
+        const MAX_SCORE = 1575; // contenu triplé : 360 + 90 + 360 + 225 + 540
 
         // ================= BADGES =================
         const badgeDefinitions = [
-            { id: 'early_riser', name: 'Early Riser', icon: 'fa-sun', desc: "Obtenir au moins 10 bonnes réponses sur 12 à l'atelier Cut & Match." },
-            { id: 'taboo_master', name: 'Taboo Master', icon: 'fa-fire', desc: "Maîtriser au moins 8 cartes sur 12 dans l'atelier Taboo Pro." },
+            { id: 'early_riser', name: 'Early Riser', icon: 'fa-sun', desc: "Obtenir au moins 30 bonnes réponses sur 36 à l'atelier Cut & Match." },
+            { id: 'taboo_master', name: 'Taboo Master', icon: 'fa-fire', desc: "Maîtriser au moins 24 cartes sur 36 dans l'atelier Taboo Pro." },
             { id: 'safety_first', name: 'Safety First', icon: 'fa-shield-halved', desc: "Obtenir la Fin Or ou Argent dans le scénario de Dublin (réception & sécurité) ou de Londres (hygiène & allergènes)." },
             { id: 'smooth_talker', name: 'As du Serious Game', icon: 'fa-crown', desc: "Débloquer au moins une Fin Or (Confiance et Maîtrise ≥ 80%) dans le Serious Game." },
             { id: 'precision_butcher', name: 'Precision Butcher', icon: 'fa-scale-balanced', desc: "Réussir le défi de conversions UK/US (°F/°C, oz/g, lb/kg)." },
@@ -1158,6 +1158,16 @@
             { cat: 'survival', en: "Should I clean the bench now or later?", fr: "Dois-je nettoyer le plan de travail maintenant ou plus tard ?", phon: "/ʃʊd aɪ kliːn ðə bentʃ naʊ ɔː ˈleɪtə/" }
         ];
 
+
+        // ================= EXTENSION EXPERT : +200% DE CONTENU =================
+        // Les banques ci-dessous portent chaque famille d'exercices à trois fois son volume initial.
+        w1Data.push(...[{"id": 13, "cat": "equipment", "term": "Meat Hooks", "options": ["Crochets à viande", "Gants anti-coupure", "Bacs alimentaires", "Pinces de service"], "correct": 0, "tip": "Outils pour suspendre et manipuler les pièces en sécurité."}, {"id": 14, "cat": "equipment", "term": "Steak Tenderiser", "options": ["Attendrisseur à viande", "Poussoir à saucisses", "Scie à os", "Trancheuse"], "correct": 1, "tip": "Outil qui attendrit mécaniquement certaines pièces."}, {"id": 15, "cat": "equipment", "term": "Probe Thermometer", "options": ["Thermomètre à sonde", "Balance", "Minuteur", "Hygromètre"], "correct": 2, "tip": "Contrôle la température au cœur du produit."}, {"id": 16, "cat": "equipment", "term": "Vacuum Sealer", "options": ["Machine sous vide", "Hachoir", "Fumoir", "Scie à ruban"], "correct": 3, "tip": "Retire l’air du sachet avant sa soudure."}, {"id": 17, "cat": "equipment", "term": "Cutting Board", "options": ["Planche à découper", "Étagère froide", "Crochet", "Couteau"], "correct": 0, "tip": "Support de découpe dédié et entretenu."}, {"id": 18, "cat": "equipment", "term": "Mincing Plate", "options": ["Grille de hachoir", "Lame de scie", "Poussoir", "Plateau"], "correct": 1, "tip": "Détermine la finesse du hachage."}, {"id": 19, "cat": "equipment", "term": "Boning Hook", "options": ["Crochet de désossage", "Fusil", "Pelle", "Spatule"], "correct": 2, "tip": "Aide à maintenir ou déplacer une pièce."}, {"id": 20, "cat": "equipment", "term": "Sharpening Steel", "options": ["Fusil à aiguiser", "Pierre à sel", "Scie", "Gant métallique"], "correct": 3, "tip": "Réaligne le fil du couteau."}, {"id": 21, "cat": "cuts", "term": "Ribeye", "options": ["Entrecôte", "Bavette", "Filet", "Joue"], "correct": 0, "tip": "Pièce persillée issue de la partie dorsale."}, {"id": 22, "cat": "cuts", "term": "Rump Steak", "options": ["Rumsteck", "Jarret", "Poitrine", "Collier"], "correct": 1, "tip": "Pièce de l’arrière adaptée aux grillades."}, {"id": 23, "cat": "cuts", "term": "Chuck", "options": ["Basse-côte / paleron", "Filet", "Queue", "Foie"], "correct": 2, "tip": "Morceau de l’épaule, souvent utilisé en cuisson longue."}, {"id": 24, "cat": "cuts", "term": "Shin", "options": ["Jarret", "Épaule", "Onglet", "Faux-filet"], "correct": 3, "tip": "Morceau riche en collagène."}, {"id": 25, "cat": "cuts", "term": "Flank Steak", "options": ["Bavette de flanchet", "Poitrine", "Filet", "Joue"], "correct": 0, "tip": "Pièce longue aux fibres marquées."}, {"id": 26, "cat": "cuts", "term": "Short Ribs", "options": ["Travers de bœuf", "Côte de veau", "Plat de côtes", "Hampe"], "correct": 1, "tip": "Côtes courtes adaptées à la cuisson lente."}, {"id": 27, "cat": "cuts", "term": "Silverside", "options": ["Rond de gîte", "Faux-filet", "Onglet", "Joue"], "correct": 2, "tip": "Dénomination courante au Royaume-Uni."}, {"id": 28, "cat": "cuts", "term": "Oxtail", "options": ["Queue de bœuf", "Langue", "Foie", "Ris"], "correct": 3, "tip": "Pièce osseuse utilisée notamment en cuisson mijotée."}, {"id": 29, "cat": "process", "term": "boning", "options": ["Désossage", "Parage", "Fumage", "Salage"], "correct": 0, "tip": "Retirer les os en suivant les articulations et les tissus."}, {"id": 30, "cat": "process", "term": "Portion Control", "options": ["Maîtrise des portions", "Maturation", "Hachage", "Étiquetage"], "correct": 1, "tip": "Respecter un poids régulier pour chaque portion."}, {"id": 31, "cat": "process", "term": "Batch Coding", "options": ["Codage des lots", "Marinade", "Pesée", "Ficelage"], "correct": 2, "tip": "Identifier précisément chaque lot."}, {"id": 32, "cat": "process", "term": "Cross-contamination", "options": ["Contamination croisée", "Chaîne du froid", "Traçabilité", "Désinfection"], "correct": 3, "tip": "Éviter le transfert de dangers entre aliments et surfaces."}, {"id": 33, "cat": "process", "term": "FIFO Rotation", "options": ["Rotation premier entré, premier sorti", "Cuisson lente", "Maturation à sec", "Congélation"], "correct": 0, "tip": "Utiliser les produits les plus anciens en premier."}, {"id": 34, "cat": "process", "term": "Marinating", "options": ["Marinade", "Désossage", "Affûtage", "Conditionnement"], "correct": 1, "tip": "Faire reposer une pièce dans un mélange aromatique."}, {"id": 35, "cat": "process", "term": "Weighing", "options": ["Pesée", "Parage", "Tranchage", "Fumage"], "correct": 2, "tip": "Mesurer précisément la masse du produit."}, {"id": 36, "cat": "process", "term": "Despatching", "options": ["Expédition", "Réception", "Désinfection", "Désossage"], "correct": 3, "tip": "Préparer et envoyer les commandes."}]);
+        conversionQuizData.push(...[{"q": "4. Une pièce pèse 1,8 lb. Quel poids approximatif faut-il afficher en kilogrammes ?", "options": ["0,82 kg", "1,80 kg", "2,45 kg"], "correct": 0}, {"q": "5. Une commande demande 24 oz de steak. Quelle masse faut-il préparer ?", "options": ["680 g", "240 g", "900 g"], "correct": 0}, {"q": "6. Une chambre froide affiche 39°F. Quelle température cela représente-t-il environ ?", "options": ["4°C", "10°C", "−4°C"], "correct": 0}, {"q": "7. Une recette prévoit 2,5 kg de farce. Combien cela représente-t-il en livres (lb), environ ?", "options": ["5,5 lb", "2,5 lb", "8,2 lb"], "correct": 0}, {"q": "8. La sonde indique 158°F. Quelle est la température en °C, environ ?", "options": ["70°C", "50°C", "90°C"], "correct": 0}, {"q": "9. Un steak pèse 340 g. Quelle masse en oz est la plus proche ?", "options": ["12 oz", "6 oz", "20 oz"], "correct": 0}]);
+        tabooData.push(...[{"word": "MEAT PROBE", "translation": "Sonde de température", "forbidden": ["Thermometer", "Core", "Temperature", "Check"], "desc": "A narrow instrument inserted into food to measure its internal heat."}, {"word": "FOOD-GRADE SANITISER", "translation": "Désinfectant apte au contact alimentaire", "forbidden": ["Chemical", "Clean", "Spray", "Bacteria"], "desc": "A product approved for reducing microorganisms on food-contact surfaces."}, {"word": "USE-BY DATE", "translation": "Date limite de consommation", "forbidden": ["Expiry", "Label", "Date", "Sell"], "desc": "The final date by which a highly perishable food should be consumed."}, {"word": "BEST-BEFORE DATE", "translation": "Date de durabilité minimale", "forbidden": ["Use-by", "Quality", "Date", "Label"], "desc": "A date mainly linked to expected quality rather than immediate safety."}, {"word": "TRACEABILITY RECORD", "translation": "Registre de traçabilité", "forbidden": ["Origin", "Batch", "Track", "Document"], "desc": "A written or digital record linking a product to its supplier and history."}, {"word": "ALLERGEN", "translation": "Allergène", "forbidden": ["Reaction", "Peanut", "Food", "Intolerance"], "desc": "A substance that can trigger an immune response in sensitive customers."}, {"word": "SEPARATE UTENSILS", "translation": "Ustensiles séparés", "forbidden": ["Tools", "Different", "Raw", "Cooked"], "desc": "Dedicated equipment used to prevent unwanted transfer between products."}, {"word": "TEMPERATURE LOG", "translation": "Relevé des températures", "forbidden": ["Record", "Cold", "Degrees", "Write"], "desc": "A document used to monitor and prove temperature checks over time."}, {"word": "PERSONAL PROTECTIVE EQUIPMENT", "translation": "Équipements de protection individuelle", "forbidden": ["PPE", "Clothes", "Safety", "Wear"], "desc": "Items worn to reduce workplace risks, such as gloves or protective footwear."}, {"word": "CUT-RESISTANT GLOVE", "translation": "Gant anti-coupure", "forbidden": ["Hand", "Knife", "Protect", "Steel"], "desc": "A protective glove designed to reduce the risk of slicing injuries."}, {"word": "BONE FRAGMENT", "translation": "Éclat d’os", "forbidden": ["Sharp", "Piece", "Skeleton", "Hard"], "desc": "A small hard piece that must be removed from meat before sale."}, {"word": "SHELF LIFE", "translation": "Durée de conservation", "forbidden": ["Time", "Fresh", "Keep", "Days"], "desc": "The period during which a food remains suitable under stated conditions."}, {"word": "STOCK ROTATION", "translation": "Rotation des stocks", "forbidden": ["FIFO", "Old", "New", "Shelf"], "desc": "A system ensuring older suitable products are used before newer ones."}, {"word": "CHILLED DISPLAY", "translation": "Vitrine réfrigérée", "forbidden": ["Cold", "Shop", "Glass", "Meat"], "desc": "A refrigerated cabinet where products are presented for sale."}, {"word": "MINCED MEAT", "translation": "Viande hachée", "forbidden": ["Grinder", "Beef", "Small", "Pieces"], "desc": "Meat reduced into small particles using a machine."}, {"word": "SAUSAGE CASING", "translation": "Boyau à saucisse", "forbidden": ["Skin", "Tube", "Fill", "Pork"], "desc": "The edible or inedible tube that contains sausage filling."}, {"word": "BRINE", "translation": "Saumure", "forbidden": ["Salt", "Water", "Liquid", "Cure"], "desc": "A salt solution used to preserve or season food."}, {"word": "YIELD", "translation": "Rendement matière", "forbidden": ["Waste", "Weight", "Output", "Loss"], "desc": "The usable quantity obtained from a raw product after preparation."}, {"word": "TRIMMINGS", "translation": "Parures", "forbidden": ["Fat", "Waste", "Pieces", "Cut"], "desc": "Small pieces removed during preparation that may be used appropriately."}, {"word": "DELIVERY NOTE", "translation": "Bon de livraison", "forbidden": ["Supplier", "Paper", "Goods", "Sign"], "desc": "A document listing goods delivered to a business."}, {"word": "RECALL PROCEDURE", "translation": "Procédure de retrait-rappel", "forbidden": ["Customer", "Batch", "Remove", "Alert"], "desc": "A planned process for removing unsafe or non-compliant products."}, {"word": "SANITARY INSPECTION", "translation": "Contrôle sanitaire", "forbidden": ["Officer", "Check", "Clean", "Visit"], "desc": "An official examination of food-safety practices and premises."}, {"word": "COLD ROOM", "translation": "Chambre froide", "forbidden": ["Fridge", "Storage", "Cold", "Walk-in"], "desc": "A refrigerated room used to store perishable products."}, {"word": "WORKFLOW", "translation": "Organisation du travail", "forbidden": ["Steps", "Process", "Team", "Order"], "desc": "The sequence of tasks and responsibilities in a workplace."}]);
+        matchingData.push(...[{"fr": "Désinfection", "en": "Disinfection"}, {"fr": "Décongélation contrôlée", "en": "Controlled thawing"}, {"fr": "Contrôle à réception", "en": "Incoming goods inspection"}, {"fr": "Prise de température", "en": "Taking the temperature"}, {"fr": "Élimination des déchets", "en": "Waste disposal"}, {"fr": "Désossage d’une épaule", "en": "Boning out a shoulder"}, {"fr": "Retrait des tendons", "en": "Removing sinew"}, {"fr": "Parage du gras", "en": "Trimming excess fat"}, {"fr": "Mise en barquette", "en": "Tray packing"}, {"fr": "Scellage du conditionnement", "en": "Sealing the packaging"}, {"fr": "Étiquetage des allergènes", "en": "Allergen labelling"}, {"fr": "Contrôle du poids net", "en": "Checking the net weight"}, {"fr": "Nettoyage du hachoir", "en": "Cleaning the mincer"}, {"fr": "Démontage de la machine", "en": "Dismantling the machine"}, {"fr": "Rinçage des surfaces", "en": "Rinsing the surfaces"}, {"fr": "Séchage du matériel", "en": "Drying the equipment"}, {"fr": "Enregistrement du lot", "en": "Recording the batch number"}, {"fr": "Gestion des réclamations", "en": "Handling complaints"}, {"fr": "Préparation d’une commande", "en": "Preparing an order"}, {"fr": "Conseil au consommateur", "en": "Advising the customer"}]);
+        falseFriendsData.push(...[{"q": "7. 'Wear suitable _____ before entering the cutting room.' (Équipement de protection)", "options": ["Equipments", "Protective equipment"], "correct": 1, "explain": "PROTECTIVE EQUIPMENT est la formulation naturelle ; EQUIPMENT est indénombrable."}, {"q": "8. 'Please _____ the delivery temperature.' (Contrôler)", "options": ["Control", "Check"], "correct": 1, "explain": "CHECK signifie vérifier. CONTROL signifie plutôt maîtriser ou réguler."}, {"q": "9. 'This product contains _____. ' (Conservateurs)", "options": ["Preservatives", "Conservators"], "correct": 0, "explain": "PRESERVATIVES désigne les conservateurs alimentaires."}, {"q": "10. 'The meat is stored in the _____.' (Chambre froide)", "options": ["Cold room", "Cold chamber"], "correct": 0, "explain": "COLD ROOM est le terme professionnel courant."}, {"q": "11. 'We need to _____ the meat before mincing.' (Désosser)", "options": ["Debone", "Disbone"], "correct": 0, "explain": "DEBONE est le verbe standard."}, {"q": "12. 'Use a clean _____ for raw poultry.' (Planche à découper)", "options": ["Chopping board", "Cutting table"], "correct": 0, "explain": "CHOPPING BOARD (UK) ou CUTTING BOARD (US) désigne la planche."}, {"q": "13. 'The customer has a food _____.' (Allergie)", "options": ["Allergy", "Allergie"], "correct": 0, "explain": "ALLERGY est le nom anglais."}, {"q": "14. 'Please keep the raw meat _____ from ready-to-eat food.' (Séparé)", "options": ["Separate", "Separatedly"], "correct": 0, "explain": "SEPARATE est l’adjectif attendu."}, {"q": "15. 'We must _____ the batch number.' (Enregistrer)", "options": ["Record", "Register"], "correct": 0, "explain": "RECORD est le verbe naturel pour consigner une donnée."}, {"q": "16. 'This cut is suitable for slow _____.' (Cuisson)", "options": ["Cooking", "Cuisining"], "correct": 0, "explain": "COOKING est le nom anglais correct."}, {"q": "17. 'Could you _____ the order, please?' (Préparer)", "options": ["Prepare", "Preparate"], "correct": 0, "explain": "PREPARE est le verbe ; PREPARATE n’existe pas."}, {"q": "18. 'The knife needs _____.' (Affûtage)", "options": ["Sharpening", "Sharping"], "correct": 0, "explain": "SHARPENING est le nom formé à partir de TO SHARPEN."}]);
+        phrasebookData.push(...[{"cat": "tools", "en": "Please pass me the boning knife.", "fr": "Passez-moi le couteau à désosser, s’il vous plaît.", "phon": ""}, {"cat": "tools", "en": "The blade is damaged; I will replace the knife.", "fr": "La lame est abîmée ; je vais remplacer le couteau.", "phon": ""}, {"cat": "tools", "en": "Switch off the mincer before cleaning it.", "fr": "Éteignez le hachoir avant de le nettoyer.", "phon": ""}, {"cat": "tools", "en": "The scale needs to be calibrated.", "fr": "La balance doit être étalonnée.", "phon": ""}, {"cat": "tools", "en": "Where do we store the sharpening steel?", "fr": "Où range-t-on le fusil à aiguiser ?", "phon": ""}, {"cat": "tools", "en": "Please check that the guard is fitted.", "fr": "Vérifiez que le carter de protection est installé.", "phon": ""}, {"cat": "tools", "en": "I have cleaned and sanitised the workbench.", "fr": "J’ai nettoyé et désinfecté le plan de travail.", "phon": ""}, {"cat": "tools", "en": "The vacuum seal is not airtight.", "fr": "La soudure sous vide n’est pas hermétique.", "phon": ""}, {"cat": "meats", "en": "This cut comes from the shoulder.", "fr": "Cette pièce provient de l’épaule.", "phon": ""}, {"cat": "meats", "en": "Would you like the fat trimmed off?", "fr": "Souhaitez-vous que je retire le gras ?", "phon": ""}, {"cat": "meats", "en": "This joint weighs just over two kilos.", "fr": "Ce rôti pèse un peu plus de deux kilos.", "phon": ""}, {"cat": "meats", "en": "The meat has been dry-aged for twenty-eight days.", "fr": "La viande a maturé à sec pendant vingt-huit jours.", "phon": ""}, {"cat": "meats", "en": "We need six portions of one hundred and fifty grams.", "fr": "Il nous faut six portions de cent cinquante grammes.", "phon": ""}, {"cat": "meats", "en": "This mince contains beef and pork.", "fr": "Cette viande hachée contient du bœuf et du porc.", "phon": ""}, {"cat": "meats", "en": "Would you prefer a thick or a thin slice?", "fr": "Préférez-vous une tranche épaisse ou fine ?", "phon": ""}, {"cat": "meats", "en": "The delivery is missing two kilograms of beef.", "fr": "Il manque deux kilos de bœuf dans la livraison.", "phon": ""}, {"cat": "safety", "en": "I have checked the core temperature.", "fr": "J’ai contrôlé la température à cœur.", "phon": ""}, {"cat": "safety", "en": "Keep raw meat separate from ready-to-eat products.", "fr": "Séparez la viande crue des produits prêts à consommer.", "phon": ""}, {"cat": "safety", "en": "This label is missing the allergen information.", "fr": "Il manque les informations sur les allergènes sur cette étiquette.", "phon": ""}, {"cat": "safety", "en": "The floor is wet; put up a warning sign.", "fr": "Le sol est mouillé ; installez un panneau de signalisation.", "phon": ""}, {"cat": "safety", "en": "Wash your hands before changing tasks.", "fr": "Lavez-vous les mains avant de changer de tâche.", "phon": ""}, {"cat": "safety", "en": "The cold-chain record must be completed.", "fr": "Le relevé de la chaîne du froid doit être complété.", "phon": ""}, {"cat": "safety", "en": "Do not use this product until it has been checked.", "fr": "N’utilisez pas ce produit avant qu’il ait été contrôlé.", "phon": ""}, {"cat": "safety", "en": "Report the damaged protective glove immediately.", "fr": "Signalez immédiatement le gant de protection endommagé.", "phon": ""}, {"cat": "survival", "en": "Could you repeat the last instruction, please?", "fr": "Pourriez-vous répéter la dernière consigne ?", "phon": ""}, {"cat": "survival", "en": "I am not sure I understood the cutting specification.", "fr": "Je ne suis pas sûr d’avoir compris le cahier des charges de découpe.", "phon": ""}, {"cat": "survival", "en": "May I check the procedure with you first?", "fr": "Puis-je d’abord vérifier la procédure avec vous ?", "phon": ""}, {"cat": "survival", "en": "I have finished this task. What should I do next?", "fr": "J’ai terminé cette tâche. Que dois-je faire ensuite ?", "phon": ""}, {"cat": "survival", "en": "Could you explain why we use this method?", "fr": "Pourriez-vous expliquer pourquoi nous utilisons cette méthode ?", "phon": ""}, {"cat": "survival", "en": "I made a mistake; I will correct it straight away.", "fr": "J’ai fait une erreur ; je vais la corriger immédiatement.", "phon": ""}, {"cat": "survival", "en": "The customer is asking about the origin of the meat.", "fr": "Le client demande l’origine de la viande.", "phon": ""}, {"cat": "survival", "en": "Thank you for showing me a different technique.", "fr": "Merci de m’avoir montré une autre technique.", "phon": ""}]);
+
         // ================= ÉTAT =================
         const defaultState = {
             score: 0,
@@ -1386,10 +1396,10 @@
             const techScore = state.convScore + state.w4Score;
 
             const skills = [
-                { name: "Vocabulaire Boucherie", val: vocabScore, max: 240, icon: "fa-spell-check", color: "bg-amber-500" },
+                { name: "Vocabulaire Boucherie", val: vocabScore, max: 720, icon: "fa-spell-check", color: "bg-amber-500" },
                 { name: "Hygiène & Sécurité", val: safetyScore, max: 90, icon: "fa-shield-halved", color: "bg-emerald-500" },
                 { name: "Serious Game & Oral", val: sgTotalScore, max: 225, icon: "fa-gamepad", color: "bg-sky-500" },
-                { name: "Savoir-Faire Technique", val: techScore, max: 250, icon: "fa-gears", color: "bg-purple-500" }
+                { name: "Savoir-Faire Technique", val: techScore, max: 630, icon: "fa-gears", color: "bg-purple-500" }
             ];
 
             document.getElementById('skills-grid').innerHTML = skills.map(sk => {
@@ -1430,11 +1440,11 @@
 
             const sgDone = Object.keys(state.sgEndings).length;
             const workshops = [
-                { tab: 'tab1', num: '1', title: 'Cut & Match + Conversions', desc: '12 termes techniques + défi °F/°C, oz/g et lb/kg', status: state.w1Completed && state.convCompleted ? 'Complété' : (state.w1Score > 0 || state.convScore > 0 ? 'En cours' : 'À faire'), pts: `${state.w1Score + state.convScore} pts` },
-                { tab: 'tab2', num: '2', title: 'Taboo & Flashcards Pro', desc: '12 cartes interactives avec audio TTS et chrono', status: state.tabooMastered.length >= 8 ? 'Complété' : (state.tabooMastered.length > 0 ? 'En cours' : 'À faire'), pts: `${state.tabooScore} pts` },
+                { tab: 'tab1', num: '1', title: 'Cut & Match + Conversions', desc: '36 termes techniques + défi °F/°C, oz/g et lb/kg', status: state.w1Completed && state.convCompleted ? 'Complété' : (state.w1Score > 0 || state.convScore > 0 ? 'En cours' : 'À faire'), pts: `${state.w1Score + state.convScore} pts` },
+                { tab: 'tab2', num: '2', title: 'Taboo & Flashcards Pro', desc: '36 cartes interactives avec audio TTS et chrono', status: state.tabooMastered.length >= 8 ? 'Complété' : (state.tabooMastered.length > 0 ? 'En cours' : 'À faire'), pts: `${state.tabooScore} pts` },
                 { tab: 'tab3', num: '3', title: 'Serious Game (Apprenti & Maître)', desc: '3 aventures à embranchements et fins multiples', status: sgDone === 3 ? 'Complété' : (sgDone > 0 ? `${sgDone}/3 Fins` : 'À jouer'), pts: `${sgTotalScore} pts` },
-                { tab: 'tab4', num: '4', title: 'Tech Lab & Fiche Technique', desc: '10 gestes, 6 faux-amis et ordre de la livraison à la vente', status: state.w4Completed ? 'Complété' : 'À faire', pts: `${state.w4Score} pts` },
-                { tab: 'tab5', num: '5', title: 'Survival Phrasebook', desc: '16 phrases réflexes avec audio et épinglage', status: 'Boîte à outils', pts: 'Audio TTS' },
+                { tab: 'tab4', num: '4', title: 'Tech Lab & Fiche Technique', desc: '30 gestes, 18 faux-amis et ordre de la livraison à la vente', status: state.w4Completed ? 'Complété' : 'À faire', pts: `${state.w4Score} pts` },
+                { tab: 'tab5', num: '5', title: 'Survival Phrasebook', desc: '48 phrases réflexes avec audio et épinglage', status: 'Boîte à outils', pts: 'Audio TTS' },
                 { tab: 'tab6', num: '6', title: 'Erasmus+ Boarding Pass', desc: 'Générateur officiel imprimable avec badges', status: state.passValidated ? 'Validé' : 'À générer', pts: 'Certificat' }
             ];
 
@@ -1734,7 +1744,7 @@
         function updateW1Progress() {
             const answered = Object.keys(state.w1Answers).length;
             document.getElementById('w1-progress-text').innerText = `${answered} / ${w1Data.length}`;
-            document.getElementById('w1-score-display').innerText = `${state.w1Score} / 120 pts`;
+            document.getElementById('w1-score-display').innerText = `${state.w1Score} / ${w1Data.length * 10} pts`;
         }
 
         function checkW1Answers() {
@@ -1762,9 +1772,9 @@
             updateW1Progress();
             recalculateScore();
 
-            if (correctCount >= 10) unlockBadge('early_riser');
-            playSound(correctCount >= 8 ? 'correct' : 'wrong');
-            showToast(`Atelier 1A validé : ${correctCount}/12 bonnes réponses (+${state.w1Score} pts)`, correctCount >= 8 ? 'success' : 'warning');
+            if (correctCount >= Math.ceil(w1Data.length * 0.83)) unlockBadge('early_riser');
+            playSound(correctCount >= Math.ceil(w1Data.length * 0.67) ? 'correct' : 'wrong');
+            showToast(`Atelier 1A validé : ${correctCount}/${w1Data.length} bonnes réponses (+${state.w1Score} pts)`, correctCount >= Math.ceil(w1Data.length * 0.67) ? 'success' : 'warning');
         }
 
         function convertTemp(from) {
@@ -1828,7 +1838,7 @@
             state.convCompleted = true;
             recalculateScore();
 
-            if (ok === 3) {
+            if (ok === conversionQuizData.length) {
                 unlockBadge('precision_butcher');
                 playSound('correct');
                 showToast("Sans-faute sur les conversions UK/US ! (+30 pts)", "success");
@@ -1985,7 +1995,7 @@
             }).join('');
 
             renderRecipeOrder();
-            document.getElementById('w4-score-display').innerText = `${state.w4Score} / 220 pts`;
+            document.getElementById('w4-score-display').innerText = `${state.w4Score} / ${matchingData.length * 10 + falseFriendsData.length * 10 + correctRecipeSteps.length * 10} pts`;
         }
 
         function renderRecipeOrder() {
@@ -2063,7 +2073,7 @@
             const totalW4 = matchPts + (ffCorrect * 10) + (recipeCorrectSteps * 10);
             state.w4Score = totalW4;
             state.w4Completed = true;
-            document.getElementById('w4-score-display').innerText = `${totalW4} / 220 pts`;
+            document.getElementById('w4-score-display').innerText = `${totalW4} / ${matchingData.length * 10 + falseFriendsData.length * 10 + correctRecipeSteps.length * 10} pts`;
             recalculateScore();
 
             if (ffCorrect === 6) unlockBadge('false_friend_hunter');
@@ -2071,7 +2081,7 @@
 
             playSound(totalW4 >= 140 ? 'correct' : 'wrong');
             showToast(
-                `Tech Lab validé : ${totalW4} / 220 pts !`,
+                `Tech Lab validé : ${totalW4} / ${matchingData.length * 10 + falseFriendsData.length * 10 + correctRecipeSteps.length * 10} pts !`,
                 totalW4 >= 140 ? 'success' : 'warning',
                 `Gestes: ${matchPts / 10}/10 • Faux-Amis: ${ffCorrect}/6 • Fiche Technique: ${recipeCorrectSteps}/6`
             );
